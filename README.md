@@ -7,7 +7,7 @@ Document Control - DITS x Tansamai
     - Vue <br>
     - Vuesax  <br>
     - Tailwind  <br>
-    - Axios  <br><br>
+    - Axios  <br><br><br>
  #Back End <br>
     - Node.js  <br>
     - Strapi Framework <br>
