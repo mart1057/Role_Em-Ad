@@ -5,7 +5,7 @@
         </div>
         <div class="flex flex-col  items-center">
             <div>
-                <div class="mb-[30px] text-center text-[24px] font-[700]">Sign in</div>
+                <div class="mb-[30px] text-center text-[24px] font-[700]">Signfffff in</div>
                 <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">Email</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[421px] h-[40px] rounded-[6px]"
