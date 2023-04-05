@@ -3,43 +3,45 @@
         <div>
             <img class="w-[85px] h-[27px] mb-[32px]  " :src="logoClicksBiz" alt="">
         </div>
-        <div class="flex flex-col  items-center">
+        <form @submit.prevent="submitRegister">
+            <!-- <li v-for="error in errors">{{ error }}</li> -->
+            <div class="flex flex-col  items-center">
             <div>
                 <div class="mb-[30px] text-center text-[24px] font-[700]">Sign up</div>
                 <div class="flex justify-between mb-[18px]">
                     <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">First Name</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[198px] h-[40px] rounded-[6px]"
-                        placeholder="Sharon" value="" type="text" />
+                        placeholder="Sharon" v-model="dataRegister.name" type="text" />
                 </div>
                 <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">Last Name</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[198px] h-[40px] rounded-[6px]"
-                        placeholder="Carr" value="" type="text" />
+                        placeholder="Carr" v-model="dataRegister.last_name" type="text" />
                 </div>
                 </div>
                 <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">Email</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[421px] h-[40px] rounded-[6px]"
-                        placeholder="Sharon.c@gmail.com" value="" type="text" />
+                        placeholder="Sharon.c@gmail.com" v-model="dataRegister.email"  type="email" />
                 </div>
                 <div class="flex flex-col">
                     <div class="flex justify-between mt-[18px]">
                     <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">Password</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[198px] h-[40px] rounded-[6px]"
-                        placeholder="********" value="" type="password" />
+                        placeholder="********" v-model="dataRegister.password" type="password" />
                 </div>
                 <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] text-[12px]">Confirm Password</span>
                     <input class="border-[#D2D2D2] border-[1px] w-[198px] h-[40px] rounded-[6px]"
-                        placeholder="********" value="" type="password" />
+                        placeholder="********" v-model="dataRegister.password_confirm" type="password" />
                 </div>
                 </div>
                 </div>
                 <div class="flex flex-col">
-                    <button class="bg-[#4FBD9E] text-[15px] w-[421px] h-[45px] rounded-[8px] mt-[25px] text-white">Sign up</button>
-                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a href="" class=" text-[#4FBD9E]">Sign up for free</a> </span>
+                    <button class="bg-[#4FBD9E] text-[15px] w-[421px] h-[45px] rounded-[8px] mt-[25px] text-white" type="submit">Sign up</button>
+                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a href="/" class=" text-[#4FBD9E]">Sign up for free</a> </span>
                 </div>
                 <div class="flex justify-between mt-[18px] items-center">
                     <hr width="193px">
@@ -62,6 +64,7 @@
                 </div>
             </div>
         </div>
+        </form>
     </div>
 </template>
 
@@ -74,13 +77,35 @@ export default {
         return {
             logoClicksBiz,
             logo_google,
-            logo_facebook
+            logo_facebook,
+            errors:[],
+            dataRegister:{
+                name:'',
+                last_name:'',
+                email:'',
+                password:'',
+                password_confirm:'',
+            }
+        }
+    },
+    methods:{
+        submitRegister(e){
+            // this.errors = [];
+            // if(!this.dataRegister.name) this.errors.push("Name required.");
+            if(this.dataRegister.password === this.dataRegister.password_confirm){
+                e.preventDefault();
+                console.log("ถูกต้อง",this.dataRegister)
+            }
+            else{
+                console.log("ไม่ถูกต้อง")
+            }
+                
         }
     }
 }
 </script>
 <style scoped>
-input[type=text],[type=password] {
+input[type=text],[type=password],[type=email] {
     font-family: 'IBM Plex Sans Thai', sans-serif;
     padding: 12px 20px;
     margin: 8px 0;
