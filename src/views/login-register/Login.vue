@@ -1,6 +1,6 @@
 <template>
-    <div class="mr-[55px] m-[35px]">
-        <div>
+    <div class="mr-[55px]" id="login">
+        <div class="p-[35px]">
             <img class="w-[85px] h-[27px] mb-[32px]  " :src="logoClicksBiz" alt="">
         </div>
         <div class="flex flex-col  items-center">
@@ -76,6 +76,11 @@ export default {
 }
 </script>
 <style scoped>
+#login{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255) !important;
+}
 input[type=text],[type=email],
 [type=password] {
     font-family: 'IBM Plex Sans Thai', sans-serif;
