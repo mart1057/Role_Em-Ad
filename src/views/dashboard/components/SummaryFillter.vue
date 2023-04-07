@@ -69,7 +69,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .vs-select__input{
     width: 120px !important;
     background-color: #3C7CFC !important;
