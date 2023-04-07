@@ -3,11 +3,13 @@
         <div class="flex justify-between p-[15px]">
             <div class="w-[50%]">
                 <div class="text-[14px] font-bold ">Remaining System Capacity</div>
-                <div class="mt-[10px]"> 
+                <div class="mt-[10px]">
                     <vs-select v-model="value">
                         <vs-option label="January" value=1>
                             <div class="flex justify-center items-center">
-                                <div><img class="w-[20px] h-[20px] rounded-[50%] " src="https://www.everysteph.com/wp-content/uploads/2022/12/Hulk-IMG-Worlds-of-Adventure.jpeg.webp"></div>
+                                <div><img class="w-[20px] h-[20px] rounded-[50%] "
+                                        src="https://www.everysteph.com/wp-content/uploads/2022/12/Hulk-IMG-Worlds-of-Adventure.jpeg.webp">
+                                </div>
                                 <div class="text-center ml-[10px]">January</div>
                             </div>
                         </vs-option>
@@ -63,40 +65,64 @@
                     </div>
                 </div>
             </div>
-            <div class="w-[250px] h-[200px]">
-                <pie-chart :data="chartData" :options="chartOptions"></pie-chart>
+            <div class="w-[300px] h-[200px]">
+                <apexchart :options="options" :series="data"></apexchart>
             </div>
+            
         </div>
     </div>
 </template>
 <script>
-import PieChart from "../hook/PieChart.js";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-ChartJS.register(ArcElement, Tooltip, Legend)
+import VueApexCharts from "vue-apexcharts";
 export default {
-    components:{
-        PieChart
+    components: {
+        apexchart: VueApexCharts,
     },
     data() {
         return {
+            data: [400, 600],
             value: '',
-            chartOptions: {
-                hoverBorderWidth: 1
-            },
-            chartData: {
-                hoverBackgroundColor: "red",
-                hoverBorderWidth: 1,
-                datasets: [
-                    {
-                        label: "Data One",
-                        backgroundColor: ["#6B7490","#4FBD9E"],
-                        labels:'fefe',
-                        data: [400,600]
-                    }
-                ]
-            }
         }
-    }
+    },
+    computed: {
+        options() {
+            return {
+                chart: {
+                    type: "donut",
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                  show: false,
+                },
+                labels:["Used","Available"],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: "Total",
+                                    fontSize: "22px",
+                                    fontWeight: "bold",
+                                    color: "#6B7490",
+                                },
+                            },
+                        },
+                    },
+                },
+                colors: [
+                    "#6B7490",
+                    "#4FBD9E"
+                ],
+                // noData: {
+                //     text: this.loading ? "Loading..." : "No Data",
+                // },
+            };
+        },
+    },
 }
 </script>
 <style scoped>
@@ -105,5 +131,4 @@ export default {
     background-color: black !important;
 
 } */
-
 </style>

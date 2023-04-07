@@ -1,12 +1,12 @@
 <template>
-    <div class="w-[100%] h-[100%] bg-[#ffffff] rounded-[10px] flex flex-col p-[15px] ">
+    <div class="w-[100%] h-[100%] bg-[#ffffff] rounded-[10px] flex flex-col p-[15px]">
         <div class="flex justify-between">
             <div class="text-[14px] font-bold ">Expiring Member/Expired Member</div>
             <div><button
                     class="w-[82px] rounded-[100px]  text-center h-[26px] font-medium bg-[#79ACF9] text-[12px] text-white">View
                     More</button></div>
         </div>
-        <div class="flex items-center justify-between pl-[15px]  pr-[15px]">
+        <div class="flex  pl-[15px]  pr-[15px] h-[100%] items-center">
             <div class="w-[49px]">
                 <div class="flex w-[80px]">
                     <div class="w-[4px] h-[10px] mt-[5px] bg-[#FFB51E]   rounded-[100px]"></div><span
@@ -20,7 +20,9 @@
                 </div>
             </div>
             <div class="w-[14vw] flex justify-center items-center  ml-[10px] h-[9vw]">
-                <pie-chart :data="chartData" :options="chartOptions"></pie-chart>
+                <div class=" flex justify-center items-center ">
+                    <apexchart :options="options" :series="data"></apexchart>
+                </div>
             </div>
             <div class="flex w-[180px] justify-between items-center  ">
                 <div>
@@ -35,7 +37,7 @@
                             </div>
 
                             <div class="center con-avatars">
-                                <vs-avatar-group max="4">
+                                <vs-avatar-group max="6">
                                     <vs-avatar circle danger size="30">
                                         <template #text>
                                             Fanny
@@ -56,7 +58,7 @@
                                             Fanny
                                         </template>
                                     </vs-avatar>
-                                    <vs-avatar circle green size="30">
+                                    <vs-avatar circle color="#FFB51E" size="30">
                                         <template #text>
                                             Fanny
                                         </template>
@@ -76,7 +78,7 @@
                                     Expird</div>
                             </div>
                             <div class="center con-avatars">
-                                <vs-avatar-group max="4">
+                                <vs-avatar-group max="6">
                                     <vs-avatar circle color="#0597E9" size="30">
                                         <template #text>
                                             A
@@ -97,21 +99,42 @@
                                             D
                                         </template>
                                     </vs-avatar>
-                                    <vs-avatar circle green size="30">
+                                    <vs-avatar circle color="#FFB51E" size="30">
                                         <template #text>
                                             E
                                         </template>
                                     </vs-avatar>
-                                    <vs-avatar circle green size="30">
+                                    <vs-avatar circle color="#0597E9" size="30">
                                         <template #text>
                                             E
                                         </template>
                                     </vs-avatar>
-                                    <vs-avatar circle green size="30">
+                                    <vs-avatar circle color="#FFB51E" size="30">
                                         <template #text>
                                             E
                                         </template>
                                     </vs-avatar>
+                                    <vs-avatar circle color="#FFB51E" size="30">
+                                        <template #text>
+                                            E
+                                        </template>
+                                    </vs-avatar>
+                                    <vs-avatar circle color="#FFB51E" size="30">
+                                        <template #text>
+                                            E
+                                        </template>
+                                    </vs-avatar>
+                                    <vs-avatar circle color="#FFB51E" size="30">
+                                        <template #text>
+                                            E
+                                        </template>
+                                    </vs-avatar>
+                                    <vs-avatar circle color="#FFB51E" size="30">
+                                        <template #text>
+                                            E
+                                        </template>
+                                    </vs-avatar>
+
                                 </vs-avatar-group>
                             </div>
                         </div>
@@ -119,37 +142,58 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
-import PieChart from "../hook/PieChart.js";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-ChartJS.register(ArcElement, Tooltip, Legend)
+import VueApexCharts from "vue-apexcharts";
 export default {
     components: {
-        PieChart
+        apexchart: VueApexCharts,
     },
     data() {
         return {
-            chartOptions: {
-                hoverBorderWidth: 1
-            },
-            chartData: {
-                hoverBackgroundColor: "red",
-                hoverBorderWidth: 1,
-                datasets: [
-                    {
-                        label: "Data One",
-                        backgroundColor: ["#F61B21", "#FFB51E",],
-                        data: [10, 5]
-                    }
-                ]
-            }
+            data: [10, 5],
         };
 
-    }
+    },
+    computed: {
+        options() {
+            return {
+                chart: {
+                    type: "donut",
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                    show: false,
+                },
+                labels: ["Expiring", "Expired"],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: "Total",
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#6B7490",
+                                },
+                            },
+                        },
+                    },
+                },
+                colors: ["#F61B21", "#FFB51E"]
+
+                // noData: {
+                //     text: this.loading ? "Loading..." : "No Data",
+                // },
+            };
+        },
+    },
 }
 
 </script>

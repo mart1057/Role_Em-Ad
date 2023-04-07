@@ -1,4 +1,4 @@
-<template></template><template>
+<template>
     <div class="w-[100%] h-[100%] bg-white rounded-[10px] flex flex-col p-[15px] ">
         <div class="flex justify-between">
             <div class="text-[14px] font-bold ">Number of Company by Package</div>
@@ -6,7 +6,7 @@
                     class="w-[82px] rounded-[100px]  text-center h-[26px] font-medium bg-[#79ACF9] text-[12px] text-white">View
                     More</button></div>
         </div>
-        <div class="flex items-center justify-between pl-[15px]  pr-[15px]">
+        <div class="flex  pl-[15px] pr-[15px] h-[100%] items-center">
             <div class="w-[49px]  text-right">
                 <div class="flex items-center">
                     <div class="w-[4px] h-[10px] bg-[#79ACF9]  rounded-[100px]"></div><span class="text-[10px] ml-[4px]">Free trial</span>
@@ -22,7 +22,9 @@
                 </div>
             </div>
             <div class="w-[14vw] flex justify-center items-center  ml-[10px] h-[9vw]">
-                <pie-chart :data="chartData" :options="chartOptions"></pie-chart>
+                <div class=" flex justify-center items-center ">
+                    <apexchart :options="options" :series="data"></apexchart>
+                </div>
             </div>
             <div class="flex w-[180px] justify-between items-center  ">
                 <div>
@@ -52,33 +54,53 @@
 </template>
 
 <script>
-import PieChart from "../hook/PieChart.js";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-ChartJS.register(ArcElement, Tooltip, Legend)
+import VueApexCharts from "vue-apexcharts";
 export default {
     components: {
-        PieChart
+        apexchart: VueApexCharts,
+       
     },
     data() {
         return {
-            chartOptions: {
-                hoverBorderWidth: 1
-            },
-            chartData: {
-                hoverBackgroundColor: "red",
-                hoverBorderWidth: 1,
-                // labels: ["Green", "Red", "Blue"],
-                datasets: [
-                    {
-                        label: "Data One",
-                        backgroundColor: ["#79ACF9","#BCC7D6","#FFB927","#64859F"],
-                        data: [10, 10, 15, 5]
-                    }
-                ]
-            }
+            data: [10, 10, 15, 5],
         };
-
-    }
+    },
+    computed: {
+        options() {
+            return {
+                chart: {
+                    type: "donut",
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                    show: false,
+                },
+                labels: ["Free trial", "Silver","Gold","Platinum"],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: "Total",
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#6B7490",
+                                },
+                            },
+                        },
+                    },
+                },
+                colors: ["#79ACF9","#BCC7D6","#FFB927","#64859F"]
+                // noData: {
+                //     text: this.loading ? "Loading..." : "No Data",
+                // },
+            };
+        },
+    },
 }
 
 </script>
