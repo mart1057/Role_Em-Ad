@@ -1,6 +1,6 @@
 <template>
-    <div class="mr-[55px]" id="login">
-        <div class="p-[35px]">
+    <div class="mr-[55px] p-[35px]" id="login">
+        <div>
             <img class="w-[85px] h-[27px] mb-[32px]  " :src="logoClicksBiz" alt="">
         </div>
         <div class="flex flex-col  items-center">

@@ -1,19 +1,19 @@
 <template>
   <div class="sidebar items-center justify-between" :style="{ width: sidebarWidth }">
     <div class="flex flex-col items-center ">
-      <div class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] rounded-[100%] mb-[8px] text-center">A</div>
+      <div class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center">A</div>
       <div class="w-[50px] rounded-[100px] text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px]">Owner</div>
       <div>
         <ItemMenu to="/register">
           <div class="mb-[28px] mt-[24px] flex">
-            <ItemMenu to="/dashboard">
+            <ItemMenu to="/">
               <md-icon>grid_view</md-icon>
             </ItemMenu>
           </div>
         </ItemMenu>
         <ItemMenu to="/dashboard">
           <div class="mb-[28px] flex">
-            <ItemMenu to="/dashboard">
+            <ItemMenu to="/document">
               <md-icon>description</md-icon>
             </ItemMenu>
           </div>

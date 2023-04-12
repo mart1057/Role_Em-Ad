@@ -44,14 +44,14 @@
                     </vs-select>
                 </div>
                 <vs-select v-model="selectWeek">
-                    <vs-option label="Week1" value="1">
-                        Week1
+                    <vs-option label="Week 1" value="1">
+                        Week 1
                     </vs-option>
                     <vs-option label="Week 2" value="2">
                         Week 2
                     </vs-option>
-                    <vs-option label="Week3" value="3">
-                        Week3
+                    <vs-option label="Week 3" value="3">
+                        Week 3
                     </vs-option>
                 </vs-select>
             </div>
@@ -69,8 +69,8 @@ export default {
     }
 }
 </script>
-<style scoped>
-.vs-select__input{
+<style>
+.vs-select__input.simple{
     width: 120px !important;
     background-color: #3C7CFC !important;
     color: white !important;
@@ -79,4 +79,5 @@ export default {
     background-color: white !important;
 
 }
+
 </style>

@@ -4,7 +4,15 @@
             <div class="w-[50%]">
                 <div class="text-[14px] font-bold ">Remaining System Capacity</div>
                 <div class="mt-[10px]">
-                    <vs-select v-model="value">
+                    <div>
+                            <select class=" select-opt w-[100%] h-[30px] rounded-[6px]">
+                                <option disabled value="">Select...</option>
+                                <option>Chatchapon Boonpan</option>
+                                <option>Beerina Kawel</option>
+                                <option>Cicogo Yiweyi</option>
+                            </select>
+                        </div>
+                    <!-- <vs-select v-model="value">
                         <vs-option label="January" value=1>
                             <div class="flex justify-center items-center">
                                 <div><img class="w-[20px] h-[20px] rounded-[50%] "
@@ -46,7 +54,7 @@
                         <vs-option label="December" value=12>
                             December
                         </vs-option>
-                    </vs-select>
+                    </vs-select> -->
                 </div>
                 <div class="mt-[20px]">
                     <div class="flex justify-between mb-[10px] ">
@@ -125,10 +133,9 @@ export default {
     },
 }
 </script>
-<style scoped>
-/* .vs-select__input{
-    border: 2px solid red !important;
-    background-color: black !important;
 
-} */
-</style>
+<style>
+.select-opt {
+    border: solid 1px #E5EAF6;
+
+}</style>

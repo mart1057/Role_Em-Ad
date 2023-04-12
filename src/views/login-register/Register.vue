@@ -1,5 +1,5 @@
 <template>
-    <div class="mr-[55px] p-[35px]">
+    <div class="mr-[55px] p-[35px]" id="register">
         <div>
             <img class="w-[85px] h-[27px] mb-[32px]  " :src="logoClicksBiz" alt="">
         </div>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex flex-col">
                     <button class="bg-[#4FBD9E] text-[15px] w-[421px] h-[45px] rounded-[8px] mt-[25px] text-white" type="submit">Sign up</button>
-                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a href="/" class=" text-[#4FBD9E]">Sign up for free</a> </span>
+                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a href="/login" class=" text-[#4FBD9E]">Sign in</a> </span>
                 </div>
                 <div class="flex justify-between mt-[18px] items-center">
                     <hr width="193px">
@@ -109,6 +109,12 @@ input[type=text],[type=password],[type=email] {
     font-family: 'IBM Plex Sans Thai', sans-serif;
     padding: 12px 20px;
     margin: 8px 0;
+}
+
+#register{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(255, 255, 255) !important;
 }
 
 

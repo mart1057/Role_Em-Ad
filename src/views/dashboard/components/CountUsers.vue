@@ -27,7 +27,7 @@
             </div>
             <div class="w-[48%] rounded-[10px] h-[177px] bg-white flex  flex-col">
                 <div class="flex justify-center">
-                    <div class="w-[83px] rounded-[100px]  text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">empolyee</div>
+                    <div class="w-[83px] rounded-[100px]  text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">Empolyee</div>
                 </div>
                 <div class=" flex justify-between mt-[15px]">
                     <div class="mr-[15px] ml-[15px] text-[#42DF6E] font-bold">Active</div>

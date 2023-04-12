@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import LoginVue from '@/views/login-register/Login.vue'
 import Register from '@/views/login-register/Register.vue'
 import DashBoard from '@/views/dashboard/DashBoard.vue'
+import Document from '@/views/document/Document'
 
 
 Vue.use(VueRouter)
@@ -19,9 +20,14 @@ const routes = [
     component: Register
   },
   {
-    path: '/dashboard',
+    path: '/',
     name: 'Dashboard',
     component: DashBoard 
+  },
+  {
+    path: '/document',
+    name: 'Document',
+    component: Document
   },
   // {
   //   path: '/about',
