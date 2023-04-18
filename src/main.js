@@ -9,9 +9,14 @@ import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
 import VueApexCharts from 'vue-apexcharts'
+import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 
 Vue.config.productionTip = false
-Vue.use(Vuesax).use(VueMaterial).use(VueApexCharts);
+Vue.use(Vuesax).use(VueMaterial).use(VueApexCharts).use(BootstrapVue).use(IconsPlugin);
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 new Vue({
   router,

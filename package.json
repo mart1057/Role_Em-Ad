@@ -9,6 +9,8 @@
   "dependencies": {
     "apexcharts": "^3.37.3",
     "autoprefixer": "^10",
+    "bootstrap": "^5.2.3",
+    "bootstrap-vue": "^2.23.1",
     "chart.js": "^4.2.1",
     "core-js": "^3.8.3",
     "piechart": "^1.0.0",

@@ -12,7 +12,7 @@
                     @click="checkTypeOrder = !checkTypeOrder">
                     <span class="m-[10px]">Pending Order</span>
                 </button>
-            </div>      
+            </div>
         </div>
         <div class="pl-[20px] pr-[20px] mt-[-10px]" v-if="!checkTypeOrder">
             <vs-table>
@@ -41,9 +41,10 @@
                             {{ tr.name }}
                         </vs-td>
                         <vs-td>
-                            <div :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }"
-                                class="w-[auto] text-white text-center flex items-center justify-center rounded-[20px]">
-                                {{ tr.plan }}
+                            <div class="flex">
+                                <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
+                                    :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }">
+                                    {{ tr.plan }}</div>
                             </div>
                         </vs-td>
                         <vs-td>
@@ -53,9 +54,10 @@
                             {{ tr.order_funnel }}
                         </vs-td>
                         <vs-td>
-                            <div :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }"
-                                class="w-[auto] h-[22px] text-white text-center flex items-center justify-center rounded-[20px]">
-                                {{ tr.status }}
+                            <div class="flex">
+                                <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
+                                    :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }">
+                                    {{ tr.status }}</div>
                             </div>
                         </vs-td>
                     </vs-tr>
@@ -93,9 +95,10 @@
                             {{ tr.name }}
                         </vs-td>
                         <vs-td>
-                            <div :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }"
-                                class="w-[auto] text-white text-center flex items-center justify-center rounded-[20px]">
-                                {{ tr.plan }}
+                            <div class="flex">
+                                <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
+                                    :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }">
+                                    {{ tr.plan }}</div>
                             </div>
                         </vs-td>
                         <vs-td>
@@ -105,9 +108,10 @@
                             {{ tr.order_funnel }}
                         </vs-td>
                         <vs-td>
-                            <div :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }"
-                                class="w-[auto] h-[22px] text-white text-center flex items-center justify-center rounded-[20px]">
-                                {{ tr.status }}
+                            <div class="flex">
+                                <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
+                                    :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }">
+                                    {{ tr.status }}</div>
                             </div>
                         </vs-td>
                     </vs-tr>
