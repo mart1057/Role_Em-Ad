@@ -146,6 +146,7 @@
 </template>
 
 <script>
+
 import VueApexCharts from "vue-apexcharts";
 export default {
     components: {
@@ -154,6 +155,7 @@ export default {
     data() {
         return {
             data: [10, 5],
+
         };
 
     },

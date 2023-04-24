@@ -168,42 +168,54 @@
                                     </div>
                                 </vs-td>
                                 <vs-td class="flex">
-                                    <div v-if="tr.member.length > 3" class="flex">
-                                        <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            <img :src="tr.member[0].img" />
+                                    <div>
+                                        <div class="flex">
+                                            <div class="center con-avatars flex">
+                                                <vs-avatar-group max="4">
+                                                    <div v-for="(member, i) in tr.member" :key="i">
+                                                        <div v-if="member.img == ''">
+                                                            <vs-avatar circle>
+                                                                <template #text>
+                                                                    {{ member.name }}
+                                                                </template>
+                                                            </vs-avatar>
+                                                        </div>
+                                                        <div v-else>
+                                                            <vs-avatar circle>
+                                                                <img :src="member.img" class="w-[100%] h-[100%]" alt="">
+                                                            </vs-avatar>
+                                                        </div>
+                                                    </div>
+                                                </vs-avatar-group>
+                                            </div>
+                                            <!-- <div
+                                                class="w-[32px] h-[32px] mt-[8px] bg-[#5dcbec] mr-[3px] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
+                                                <img :src="tr.member[0].img" />
+                                            </div>
+                                            <div
+                                                class="w-[32px] h-[32px] mt-[8px] bg-[#5dcbec]  mr-[3px] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
+                                                <img :src="tr.member[1].img" />
+                                            </div>
+                                            <div
+                                                class="w-[32px] h-[32px] mt-[8px] bg-[#5dcbec] mr-[3px] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
+                                                <img :src="tr.member[2].img" />
+                                            </div>
+                                            <div
+                                                class="w-[32px] h-[32px] mt-[8px] bg-[#5dcbec]  mr-[3px] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
+                                                +{{ tr.member.length - 3 }}</div> -->
                                         </div>
-                                        <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            <img :src="tr.member[1].img" />
-                                        </div>
-                                        <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            <img :src="tr.member[2].img" />
-                                        </div>
-                                        <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            +{{ tr.member.length - 3 }}</div>
+                                        <!-- <div v-if="tr.member.length <= 3" class="flex">
+                                            <div v-for="(member, i) in tr.member" :key="i"
+                                                class="w-[32px] h-[32px] mt-[8px] bg-[#5dcbec]  flex rounded-[100%] mb-[8px] text-center text-white mr-[3px]">
+                                                <img :src="member.img" />
+                                            </div>
 
-
-                                        <!-- <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            <img :src="tr.member[0].img" />
-                                            <img :src="tr.member[1].img" />
-                                            <img :src="tr.member[2].img" />
-                                            <div class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">+ {{ tr.member.length-3 }}</div>
                                         </div> -->
-                                    </div>
-                                    <div v-for="(member, i) in tr.member" :key="i" class="flex"
-                                        v-if="tr.member.length <= 3">
-                                        <div
-                                            class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
-                                            <img :src="member.img" />
-                                        </div>
-                                    </div>
-                                    <!-- <div
+                                        <!-- <div
                                         class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
                                         <img src="https://en.pimg.jp/047/504/290/1/47504290.jpg"/></div> -->
+                                    </div>
+
                                 </vs-td>
                                 <vs-td>
                                     <div class="flex">
@@ -258,7 +270,7 @@
                                         <template #badge>
                                             <div><img :src="ImgClose"
                                                     class="flex justify-center items-center w-[6px] h-[6px] cursor-pointer"
-                                                    @click="deleteMember(i)">
+                                                    @click="removeMember(data, i)">
                                             </div>
                                         </template>
                                     </vs-avatar>
@@ -269,11 +281,11 @@
                             <div>
                                 <vs-tooltip bottom shadow not-hover v-model="actionAddMember">
                                     <div class="w-[44px] h-[44px] mt-[8px] bg-[#369C7B] cursor-pointer flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white text-[20px]"
-                                        @click="actionAddMember = !actionAddMember">
+                                        @click="dataMember.length > 0 ? actionAddMember = !actionAddMember : actionAddMember = false">
                                         +</div>
-                                    <template #tooltip>
+                                    <template #tooltip v-if="dataMember.length > 0">
                                         <div v-for="(member, i) in dataMember" :key="i" class="w-[100%]">
-                                            <di class="flex cursor-pointer mb-[10px]" @click="addDataMember(member)">
+                                            <div class="flex cursor-pointer mb-[10px]" @click="addDataMember(member)">
                                                 <!-- <div
                                                     class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center text-white">
                                                     {{ member.name }}</div> -->
@@ -285,7 +297,7 @@
                                                 </vs-avatar>
                                                 <div class="flex justify-center items-center ml-[12px]">{{ member.name }}
                                                 </div>
-                                            </di>
+                                            </div>
                                             <!-- <div class="border-b-2  border-[#E5EAF6] mr-[10px] "></div> -->
                                         </div>
                                     </template>
@@ -392,7 +404,7 @@
                                     <div class="flex items-center justify-between">
                                         <div class="text-[10px] flex justify-center items-center font-bold">{{ tag.name }}
                                         </div>
-                                        <div class="mr-[-5px] hover" @click="deleteTag(i)"><md-icon class="icon-deleteTag"
+                                        <div class="mr-[-5px] hover" @click="removeTag(i)"><md-icon class="icon-deleteTag"
                                                 style=" color:#ffffff;">close</md-icon></div>
                                     </div>
                                 </div>
@@ -419,7 +431,7 @@
                                             {{ file.size }} MB
                                         </span>
                                     </div>
-                                    <div @click="deleteFile(i)" class="cursor-pointer">
+                                    <div @click="removeFile(i)" class="cursor-pointer">
                                         <md-icon>close</md-icon>
                                     </div>
 
@@ -476,7 +488,7 @@
                                                 {{ file.size }} MB
                                             </span>
                                         </div>
-                                        <div @click="deleteFileRelated(i)" class="cursor-pointer">
+                                        <div @click="removeFileRelated(i)" class="cursor-pointer">
                                             <md-icon>close</md-icon>
                                         </div>
 
@@ -532,10 +544,7 @@
 
         </b-modal>
 
-
-
         <!-- //////////////////////////////////////// Start Workflow ///////////////////////////////////////////////////// -->
-
         <b-modal centered v-model="dailogStep2" size="xl" hide-backdrop hide-header-close hide-header hide-footer
             hidden-footer>
             <div class="flex justify-end">
@@ -645,20 +654,31 @@
                         <div class="flex">
                             <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
                                 <div class="flex justify-center items-center">
-                                    <vs-avatar circle badge-color="#EFEFEF" badge-position="bottom-right" history
-                                        :color="data.color">
+                                    <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
+                                        badge-position="bottom-right" :color="data.color">
                                         <template #text>
                                             {{ data.name }}
                                         </template>
-                                        <template #badge>
-                                            <div><img src="../../assets/image/vertify.png"
+
+                                        <template #badge v-if="data.status != null">
+                                            <div>
+                                                <div v-if="data.status == true">
+                                                    <img src="../../assets/image/vertify.png"
+                                                        class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                </div>
+                                                <div v-else
                                                     class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                    !
+                                                </div>
+
                                             </div>
                                         </template>
+
                                     </vs-avatar>
                                 </div>
-                                <div class="flex justify-center items-center"><md-icon
-                                        style=" color:#3C7CFC;">arrow_right_alt</md-icon></div>
+                                <div class="flex justify-center items-center" v-if="i != addMember.length - 1">
+                                    <md-icon style=" color:#3C7CFC;">arrow_right_alt</md-icon>
+                                </div>
                             </div>
                         </div>
 
@@ -791,11 +811,12 @@
                     <div>
                         <button
                             class="h-[38px]text-[center] rounded-[6px] bg-[red] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
-                            @click="submitReject">
+                            @click="dailogReject = !dailogReject">
                             Reject
                         </button>
                         <button
-                            class="h-[38px]text-[center] rounded-[6px] ml-[10px] bg-[#6B7490] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]">
+                            class="h-[38px]text-[center] rounded-[6px] ml-[10px] bg-[#6B7490] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
+                            @click="dailogActLog = !dailogActLog">
                             Activity Log
                         </button>
                     </div>
@@ -804,15 +825,13 @@
                 <div>
                     <button
                         class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
-                        @click="dailogStep3 = !dailogStep3">Confirm
+                        @click="startFlow">Confirm
                     </button>
                 </div>
             </div>
         </b-modal>
 
-
         <!-- //////////////////////////////////////// Start Confirm ///////////////////////////////////////////////////// -->
-
         <b-modal centered v-model="dailogStep3" size="xl" hide-backdrop hide-header-close hide-header hide-footer
             hidden-footer>
             <div class="flex justify-end">
@@ -923,19 +942,29 @@
                         <div class="flex">
                             <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
                                 <div class="flex justify-center items-center">
-                                    <vs-avatar circle badge-color="#EFEFEF" badge-position="bottom-right" history
-                                        :color="data.color">
+                                    <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
+                                        badge-position="bottom-right" :color="data.color">
                                         <template #text>
                                             {{ data.name }}
                                         </template>
-                                        <template #badge>
-                                            <div><img src="../../assets/image/vertify.png"
+
+                                        <template #badge v-if="data.status != null">
+                                            <div>
+                                                <div v-if="data.status == true">
+                                                    <img src="../../assets/image/vertify.png"
+                                                        class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                </div>
+                                                <div v-else
                                                     class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                    !
+                                                </div>
+
                                             </div>
                                         </template>
+
                                     </vs-avatar>
                                 </div>
-                                <div class="flex justify-center items-center"><md-icon
+                                <div class="flex justify-center items-center" v-if="i != addMember.length - 1"><md-icon
                                         style=" color:#3C7CFC;">arrow_right_alt</md-icon></div>
                             </div>
                         </div>
@@ -989,19 +1018,47 @@
                                                     file.type
                                                     == true ? 'Approve' : 'Revise' }}
                                             </div>
-                                            <div class="flex items-center justify-center cursor-pointer w-[30px] h-[30px]">
+                                            <div
+                                                class="flex items-center justify-center cursor-pointer w-[30px] h-[30px] mr-[10px]">
                                                 <md-icon style=" color:#F8AB0D;" v-if="file.type == false"
                                                     @click="OpenNote = !OpenNote">maps_ugc</md-icon>
                                             </div>
                                         </div>
 
-                                        <div class="w-[128px]">
+                                        <!-- <div class="w-[128px] ">
                                             <img class="w-[128px] h-[32px]  mt-[-8px] ml-[13px] cursor-pointer"
                                                 :src="reUpload" @click="actionUploadFile = !actionUploadFile">
+                                        </div> -->
+                                        <div>
+                                            <vs-tooltip bottom shadow not-hover v-model="actionReUploadFile">
+                                                <div class="w-[128px]">
+                                                    <img class="w-[128px] h-[32px] mt-[-8px] ml-[12px] mr-[6px] cursor-pointer"
+                                                        :src="reUpload" @click="actionReUploadFile = !actionReUploadFile">
+                                                </div>
+                                                <template #tooltip>
+                                                    <div class="m-[10px]">
+                                                        <div class="flex ">
+                                                            <input type="file" ref="aaa" id="upload" hidden
+                                                                @change="reUploadFile($event.target.files, file)" /><label
+                                                                class="flex cursor-pointer" for="upload">
+                                                                <div><md-icon>upload</md-icon></div>
+                                                                <div class="flex items-center justify-center ml-[10px]">
+                                                                    Upload From Driver
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                        <div class="flex mt-[10px] cursor-pointer">
+                                                            <div><md-icon>document_scanner</md-icon></div>
+                                                            <div class="flex items-center justify-center  ml-[10px]">Upload
+                                                                With Scan </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </vs-tooltip>
                                         </div>
                                         <div class="w-[128px]">
                                             <img class="w-[24px] h-[24px]  mt-[-8px] ml-[13px] cursor-pointer"
-                                                :src="deleteFile">
+                                                :src="deleteFile" @click="removeFile(i)">
                                         </div>
                                         <vs-dialog width="550px" not-center not-close v-model="OpenNote">
                                             <div class="p-[10px]">
@@ -1078,13 +1135,428 @@
                 </div>
                 <div>
                     <button
-                        class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]">Revise
+                        class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
+                        @click="startComfirm">Revise
                     </button>
                 </div>
             </div>
         </b-modal>
-        <div>
-        </div>
+
+        <!-- //////////////////////////// Activity Log //////////////////////// -->
+        <b-modal centered v-model="dailogActLog" size="l" scrollable>
+            <template #modal-header>
+                <div>
+                    <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">DITS Project</div>
+                    <div class="flex mt-[12px]">
+                        <div class="text-[18px] font-bold text-[black] mr-[10px]">IV110823_supplierBKK02.pdf</div>
+                        <!-- <div class=" flex">
+                            <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px]"
+                                :style="{
+                                    background: tr.status == 'Draft' ?
+                                        '#BCC7D6' : tr.status === 'Pending [Serial] 2/3' ? '#79ACF9' : tr.status === 'Approved' ? '#369C7B' : '#6B7490'
+                                }">
+                                {{ tr.status }}</div>
+                        </div> -->
+                        <div class="flex">
+                            <div
+                                class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
+                                Darft</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div @click="dailogActLog = !dailogActLog" class="cursor-pointer text-right"><md-icon>close</md-icon>
+                    </div>
+                    <div class="flex mt-[12px]">
+                        <div><md-icon style=" color:#79ACF9;">share</md-icon></div>
+                        <!-- <div @click="tr.action = !tr.action"><md-icon
+                                    :style="{ color: tr.action == true ? '#FFB927' : '#79ACF9' }">star_outline</md-icon>
+                            </div> -->
+                        <div><md-icon>star_outline</md-icon>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div>
+                <div class="flex mb-[10px]">
+                    <div class="w-[30px] h-[30px] bg-black rounded-[100px]"></div>
+                    <div class="ml-[10px]">
+                        <div class="text-[10px] text-black font-bold">20/11/2022 21:40</div>
+                        <div class="text-[10px] text-black font-bold">Ask for Revise and Comment <span
+                                class="text-[10px] font-normal"> on IV110823_supplierBKK02.pdf</span></div>
+                    </div>
+                </div>
+            </div>
+            <template #modal-footer>
+                <div class="w-100">
+                    <button class="bg-[#6B7490] text-white pl-[12px] pr-[12px] pt-[6px] pb-[6px] rounded-[6px]"
+                        @click="dailogActLog = !dailogActLog">Black</button>
+                </div>
+            </template>
+        </b-modal>
+
+        <!-- //////////////////////////// Revise //////////////////////// -->
+        <b-modal centered v-model="dailogRevis" size="l" hide-header>
+            <div class="flex justify-between">
+                <div class="font-bold text-[20px] text-[#000000]">Revise</div>
+                <div @click="dailogRevis = !dailogRevis" class="cursor-pointer"><md-icon>close</md-icon></div>
+            </div>
+            <div>
+                <div class="text-[16px] font-bold text-[#2D3349]">Note to members</div>
+                <div class="w-[100%] h-[97px] border rounded-[6px] mt-[8px] pl-[8px] pr-[8px]">Test</div>
+            </div>
+            <div class="w-[100%] flex justify-between mt-[18px] " v-if="formDataDoc.allFile.length != 0">
+                <div class="w-[70%] mt-[26px] flex flex-col justify-between items-cente">
+                    <div class="test w-[307px] h-[32px] mb-[10px] pl-[10px] pr-[10px] flex justify-between items-center"
+                        v-for="(file, i) in formDataDoc.allFile" :key="i">
+                        <div>
+                            <span class="text-[#3C7CFC] font-bold">{{ file.name }}</span>
+                            <span class="text-[#3C7CFC] ml-[10px]">
+                                {{ file.size }} MB
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <div>
+                        <div class="text-[#2D3349] font-bold text-[12px] w-[20%] mb-[8px]">Signature</div>
+                        <div>
+                            <div class="mb-[10px]" v-for="(file, i) in formDataDoc.allFile" :key="i">
+                                <vs-checkbox v-model="file.requiredFile">
+                                    Required
+                                </vs-checkbox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w-[100%] flex justify-between mt-[18px]" v-if="hideRevise">
+                <div class="w-[70%]">
+                    <div class="font-bold text-[#6B7490]">Old file</div>
+                    <div class="text-[#3C7CFC] mt-[8px]">IV110823_supplierBKK01.pdf</div>
+                    <div class="text-[#3C7CFC]">IV110823_supplierBKK01.pdf</div>
+                </div>
+                <div class="w-[30%] ">
+                    <div class="font-bold text-[#6B7490]">Date</div>
+                    <div class="text-[#6B7490] mt-[8px]">17/02/2023 9:02</div>
+                    <div class="text-[#6B7490]">17/02/2023 9:02</div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center mt-[14px]" @click="hideRevise = !hideRevise">
+                <div class="font-bold text-[#6B7490] text-[12px]">{{ hideRevise == true ? 'Hide' : 'Show Old File' }}</div>
+                <div><md-icon>{{ hideRevise == true ? 'expand_less' : 'expand_more' }}</md-icon></div>
+
+            </div>
+            <template #modal-footer>
+                <div class="w-100 flex justify-between">
+                    <div>
+                        <button class=" text-[#6B7490]  font-bold pl-[12px] pr-[12px] pt-[6px] pb-[6px] rounded-[6px]"
+                            @click="dailogRevis = !dailogRevis">Cancle</button>
+                    </div>
+                    <div>
+                        <button
+                            class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
+                            @click="startRevis">Send for re-approve
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </b-modal>
+
+        <!-- //////////////////////////// Reject //////////////////////// -->
+        <b-modal centered v-model="dailogReject" size="l" hide-header>
+            <div class="flex justify-between">
+                <div class="font-bold text-[20px] text-[#000000]">Reject</div>
+                <div @click="dailogReject = !dailogReject" class="cursor-pointer"><md-icon>close</md-icon></div>
+            </div>
+            <div>
+                <div class="text-[16px] font-bold text-[#2D3349]">Note to members</div>
+                <div class="w-[100%] h-[97px] border rounded-[6px] mt-[8px] pl-[8px] pr-[8px]">Test</div>
+            </div>
+            <template #modal-footer>
+                <div class="w-100 flex justify-between">
+                    <div>
+                        <button class=" text-[#6B7490]  font-bold pl-[12px] pr-[12px] pt-[6px] pb-[6px] rounded-[6px]"
+                            @click="dailogReject = !dailogReject">Cancle</button>
+                    </div>
+                    <div>
+                        <button
+                            class="h-[38px]text-[center] rounded-[6px] bg-[red] font-bold text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
+                            @click="submitReject">Confrim reject
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </b-modal>
+
+        <!-- /////////////////////// Success ///////////////// -->
+        <b-modal centered v-model="dialogSuccess" size="xl" hide-backdrop hide-header-close hide-header hide-footer
+            hidden-footer>
+            <div class="flex justify-end">
+                <div @click="dialogSuccess = !dialogSuccess" class="cursor-pointer"><md-icon>close</md-icon></div>
+            </div>
+            <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">DITS Project</div>
+
+            <div class="flex mb-[10px] justify-between">
+                <div class="flex">
+                    <div class="text-[18px] font-bold text-[black] mr-[10px]">IV110823_supplierBKK02.pdf</div>
+                    <!-- <div class=" flex">
+                            <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px]"
+                                :style="{
+                                    background: tr.status == 'Draft' ?
+                                        '#BCC7D6' : tr.status === 'Pending [Serial] 2/3' ? '#79ACF9' : tr.status === 'Approved' ? '#369C7B' : '#6B7490'
+                                }">
+                                {{ tr.status }}</div>
+                        </div> -->
+                    <div class="flex">
+                        <div
+                            class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
+                            Darft</div>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div><md-icon style=" color:#79ACF9;">share</md-icon></div>
+                    <!-- <div @click="tr.action = !tr.action"><md-icon
+                                    :style="{ color: tr.action == true ? '#FFB927' : '#79ACF9' }">star_outline</md-icon>
+                            </div> -->
+                    <div><md-icon>star_outline</md-icon>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b-2  border-[#E5EAF6] ml-[-16px] mr-[-16px]"></div>
+            <div class="flex">
+                <div class="ml-[30px]">
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Document Name</div>
+                        <div class="text-[12px]">{{ formDataDoc.doc_name }}</div>
+                    </div>
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Document Type</div>
+                        <div class="text-[12px]">{{ formDataDoc.doc_type }}</div>
+                    </div>
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="flex justify-between">
+                            <div class="flex justify-between">
+                                <div>
+                                    <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Created Date</div>
+                                    <div class="text-[12px]">22 Dec 2023 by</div>
+                                </div>
+                                <div class="flex items-center justify-center ml-[8px]">
+                                    <vs-avatar circle>
+                                        <template #text>
+                                            Test
+                                        </template>
+                                    </vs-avatar>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Due Date</div>
+                                <div class="text-[12px]">31 Dec 2023</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Note</div>
+                        <div class="text-[12px]">
+                            {{ formDataDoc.note }}
+                        </div>
+                    </div>
+                    <div class=" flex mt-[10px] mr-[10px]">
+                        <div>
+                            <div class="flex mb-[8px] text-[#2D3349] font-bold text-[12px]">
+                                <div>Sequential Order</div>
+                            </div>
+                            <div class="flex">
+                                <template>
+                                    <div class="center flex">
+                                        <vs-radio v-model="formDataDoc.seq_order" val="true" disabled>
+                                            <div class="text-[10px]">Parallel</div>
+                                        </vs-radio>
+                                        <vs-radio v-model="formDataDoc.seq_order" val="false" disabled>
+                                            <div class="text-[10px]">Serial</div>
+                                        </vs-radio>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="ml-[20px]">
+                            <div class="flex mb-[8px] text-[#2D3349] font-bold text-[12px]">
+                                <div>After Approval</div>
+                            </div>
+                            <div class="flex justify-center items-center">
+                                <div>
+                                    <vs-switch success style="height: 22px;" v-model="formDataDoc.after_approval" disabled>
+                                    </vs-switch>
+                                </div>
+                                <div class="flex  text-[10px] ml-[8px] w-[200px]">Move to approved Folder
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Member</div>
+                        <div class="flex">
+                            <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
+                                <div class="flex justify-center items-center">
+                                    <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
+                                        badge-position="bottom-right" :color="data.color">
+                                        <template #text>
+                                            {{ data.name }}
+                                        </template>
+
+                                        <template #badge v-if="data.status != null">
+                                            <div>
+                                                <div v-if="data.status == true">
+                                                    <img src="../../assets/image/vertify.png"
+                                                        class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                </div>
+                                                <div v-else
+                                                    class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                    !
+                                                </div>
+
+                                            </div>
+                                        </template>
+
+                                    </vs-avatar>
+                                </div>
+                                <div class="flex justify-center items-center"><md-icon
+                                        style=" color:#3C7CFC;">arrow_right_alt</md-icon></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="mt-[10px] mr-[10px]">
+                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Tag</div>
+                        <div class="flex text-center" v-if="formDataDoc.tagArr.length != 0">
+                            <div class="h-[20px] pl-[10px] pr-[10px]  flex justify-center text-center bg-[#6B7490] text-[white] rounded-[100px] mr-[10px]"
+                                v-for="(tag, i) in  formDataDoc.tagArr" :key="i">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-[10px] flex justify-center items-center font-bold">{{ tag.name }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-l-2 h-[500px] ml-[70px] border-[#E5EAF6]"></div>
+                <div class="flex w-[100%]">
+                    <div class="ml-[46px] mt-[10px] flex ">
+                        <div>
+                            <div class="flex justify-between w-[307px]">
+                                <div class="mb-[8px] text-[#2D3349] font-bold text-[12px] w-[70%]">Approval Document<span
+                                        v-if="formDataDoc.allFile.length != 0"> ({{ formDataDoc.allFile.length }})</span>
+                                </div>
+                                <div class="mb-[8px] text-[#79ACF9] font-bold text-[10px]">Download All</div>
+                            </div>
+                            <div v-if="formDataDoc.allFile.length != 0" class="flex">
+                                <div>
+                                    <div class="test w-[307px] h-[32px] mb-[10px] pl-[10px] pr-[10px] flex justify-between items-center"
+                                        v-for="(file, i) in formDataDoc.allFile" :key="i">
+
+                                        <div>
+                                            <span class="text-[#3C7CFC] font-bold">{{ file.name }}</span>
+                                            <span class="text-[#3C7CFC] ml-[10px]">
+                                                {{ file.size }} MB
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' : 'edit'
+                                            }}</md-icon>
+                                            <md-icon style=" color:#79ACF9;">download</md-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center" v-for="(file, i) in formDataDoc.allFile" :key="i">
+                                        <div class="flex  ml-[12px] mb-[10px] w-[65px] ">
+                                            <div class="rounded-[12px] text-white pb-[8px] pt-[8px] pl-[12px] pr-[12px] text-[10px] flex justify-center items-center"
+                                                :style="{ background: file.type == true ? '#369C7B' : '#F8AB0D' }">{{
+                                                    file.type
+                                                    == true ? 'Approve' : 'Revise' }}
+                                            </div>
+                                            <div class="flex items-center justify-center cursor-pointer w-[30px] h-[30px]">
+                                                <md-icon style=" color:#F8AB0D;" v-if="file.type == false"
+                                                    @click="OpenNote = !OpenNote">maps_ugc</md-icon>
+                                            </div>
+                                        </div>
+                                        <vs-dialog width="550px" not-center not-close v-model="OpenNote">
+                                            <div class="p-[10px]">
+                                                <div class="flex justify-between ">
+                                                    <div class="text-[20px] font-bold">Comment</div>
+                                                    <div @click="OpenNote = !OpenNote" class="cursor-pointer">
+                                                        <md-icon>close</md-icon>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-[12px] font-bold">Note to creator</div>
+                                                <div><textarea class="w-[100%] min-h-[100px] mt-[12px]"
+                                                        v-model="note"></textarea>
+                                                </div>
+                                                <div
+                                                    class="border-b-2  border-[#E5EAF6] ml-[-25px] mr-[-25px] mt-[20px] mb-[20px]">
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <button class="text-[#6B7490]"
+                                                        @click="OpenNote = !OpenNote">Cancle</button>
+                                                    <button class="bg-[#F8AB0D] p-[10px] text-white rounded-[10px] "
+                                                        @click="OpenNote = !OpenNote">Confirm</button>
+                                                </div>
+                                            </div>
+                                        </vs-dialog>
+                                    </div>
+                                </div>
+                                <!-- <div>
+                            <div class="flex">
+                                <vs-button border :active="active == 0" @click="active = 0">
+                                    Active
+                                </vs-button>
+                                <vs-button border :active="active == 1" @click="active = 1">
+                                    Default
+                                </vs-button>
+                            </div>
+                        </div> -->
+                            </div>
+                            <div class="mt-[50px]">
+                                <div class="mb-[8px] text-[#2D3349] font-bold text-[12px] ">Related Files <span
+                                        v-if="formDataDoc.allRelated.length != 0"> ({{ formDataDoc.allRelated.length
+                                        }})</span></div>
+                                <div class="mb-[8px]  text-[12px] " v-if="formDataDoc.allRelated.length == 0">None</div>
+                                <div v-else>
+                                    <div>
+                                        <div class="test w-[307px] h-[32px] mb-[10px] pl-[10px] pr-[10px] flex justify-between items-center"
+                                            v-for="(file, i) in formDataDoc.allRelated" :key="i">
+                                            <div>
+                                                <span class="text-[#3C7CFC] font-bold">{{ file.name }}</span>
+                                                <span class="text-[#3C7CFC] ml-[10px]">
+                                                    {{ file.size }} MB
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mt-[10px] flex ml-[30px]">
+                    </div>
+                </div>
+            </div>
+            <div class="border-b-2  border-[#E5EAF6] ml-[-16px] mr-[-16px] "></div>
+            <div class="flex justify-between mt-[5px]">
+                <div>
+                    <div>
+                        <button
+                            class="h-[38px]text-[center] rounded-[6px] ml-[10px] bg-[#6B7490] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
+                            @click="dailogActLog = !dailogActLog">
+                            Activity Log
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -1094,8 +1566,6 @@ import deleteFile from '@/assets/image/deleteFile.png';
 import imgUpload from '@/assets/image/test-upload.png';
 import ImgClose from '@/assets/image/close.png';
 import reUpload from '@/assets/image/re-Upload.png';
-
-
 
 export default {
     data() {
@@ -1108,20 +1578,31 @@ export default {
             ImgClose,
             deleteFile,
             file: null,
+            reFile: {},
             fileRelated: null,
             activeType: null,
             OpenNote: false,
             note: '',
             tag: '',
+            hideRevise: true,
             actionAddMember: false,
             actionUploadFile: false,
+            actionReUploadFile: false,
             actionFilter: false,
             actionRelatedFile: false,
-            dataMember: [{ id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg' }, { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', }, { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', }],
+            dataMember: [
+                { id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: true },
+                { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', status: true },
+                { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', status: null },
+                { id: 4, name: 'Zeesa Kewart', color: '#FFB962Q', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: false }],
             addMember: [],
             dailogCreateDoc: false,
             dailogStep2: false,
             dailogStep3: false,
+            dailogActLog: false,
+            dailogRevis: false,
+            dialogSuccess: false,
+            dailogReject: false,
             formDataDoc: {
                 doc_name: '',
                 doc_type: '',
@@ -1143,7 +1624,7 @@ export default {
                     create: "8/01/2023 12:45",
                     due_date: "17/02/2023 12:45",
                     status: "Draft",
-                    member: [],
+                    member: [{ id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg' }, { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', }, { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', }],
                     action: false
                 },
                 {
@@ -1249,18 +1730,52 @@ export default {
         },
 
         addDataMember(member) {
-            this.addMember.push(member)
+            this.addMember.push({
+                index: this.addMember.length + 1,
+                id: member.id,
+                name: member.name,
+                color: member.color,
+                img: member.img,
+                status: member.status
+            })
+            this.actionAddMember = false
+            this.dataMember = this.dataMember.filter((m) => {
+                return m.id != member.id
+            })
             console.log(this.addMember);
 
         },
         uploadFile() {
             this.file = this.$refs.file.files[0];
             this.formDataDoc.allFile.push({
+                id: this.formDataDoc.allFile.length,
                 name: this.file.name,
                 size: this.file.size,
                 type: null, //true คือ Approve false คือ Revise all
                 checkSignal: false
             })
+            console.log(this.formDataDoc.allFile);
+
+        },
+        reUploadFile(file, oldFile) {
+            console.log(file[0]);
+            this.reFile.name = file[0].name;
+            this.reFile.size = file[0].size
+            this.reFile.id = oldFile.id
+            this.reFile.type = oldFile.type
+            this.reFile.checkSignal = oldFile.checkSignal
+            console.log(this.reFile);
+            this.formDataDoc.allFile.fill(this.reFile, oldFile.id, 2)
+            console.log(this.formDataDoc.allFile);
+
+
+            // console.log(this.reFile);
+            // this.formDataDoc.allFile.push({
+            //     name: this.file.name,
+            //     size: this.file.size,
+            //     type: null, //true คือ Approve false คือ Revise all
+            //     checkSignal: false
+            // })
 
         },
         uploadFileRelated() {
@@ -1294,25 +1809,55 @@ export default {
                 action: false
             })
             this.dailogStep2 = false
+            this.dailogReject = false
         },
         createStartFlow() {
             this.dailogStep2 = true
             this.dailogCreateDoc = false
         },
+        startFlow() {
+            this.dailogStep2 = false
+            this.dailogStep3 = true
 
-        deleteTag(i) {
+        },
+        startComfirm() {
+
+            this.dailogRevis = true
+        },
+        startRevis() {
+            this.users.push({
+                id: 1,
+                name: this.formDataDoc.doc_name,
+                project: "DITS Project",
+                tag: this.formDataDoc.tagArr,
+                create: "8/01/2023 12:45",
+                due_date: "17/02/2023 12:45",
+                status: "Approved",
+                member: this.addMember,
+                action: false
+            })
+            this.dialogSuccess = true
+            this.dailogRevis = false
+            this.dailogStep3 = false
+        },
+        statusSuccess() {
+
+        },
+
+        removeTag(i) {
             this.formDataDoc.tagArr.splice(i, 1)
         },
-        deleteMember(i) {
+        removeMember(data, i) {
+            console.log(i);
             this.addMember.splice(i, 1)
+            this.dataMember.push(data)
         },
-        deleteFile(i) {
+        removeFile(i) {
             this.formDataDoc.allFile.splice(i, 1)
 
         },
-        deleteFileRelated(i) {
+        removeFileRelated(i) {
             this.formDataDoc.allRelated.splice(i, 1)
-
         }
     }
 

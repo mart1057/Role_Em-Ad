@@ -63,12 +63,12 @@
                     </div>
                     <hr>
                     <div class="flex justify-between mb-[-10px] mt-[-10px]">
-                        <div class="text-[12px] text-[#6B7490] font-bold flex justify-center items-center font-bold">Used</div>
+                        <div class="text-[12px] text-[#6B7490] flex justify-center items-center font-bold">Used</div>
                         <div class="text-[24px] text-[#6B7490] font-bold">400 GB</div>
                     </div>
                     <hr>
                     <div class="flex justify-between  mb-[-10px] mt-[-10px] ">
-                        <div class="text-[12px] text-[#6B7490] font-bold flex justify-center items-center font-bold">Available</div>
+                        <div class="text-[12px] text-[#6B7490] flex justify-center items-center font-bold">Available</div>
                         <div class="text-[28px] text-[#4FBD9E] font-bold">600 GB</div>
                     </div>
                 </div>
