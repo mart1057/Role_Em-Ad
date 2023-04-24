@@ -3,7 +3,7 @@
     <div :style="{ 'margin-left': sidebarWidth }"><Toolbar/></div>
     <Sidebar />
     <div class=" border-[#E9EEF6]" :style="{ 'margin-left': sidebarWidth}">
-      <router-view />
+      <router-view/>
     </div>
   </div>
 </template>
