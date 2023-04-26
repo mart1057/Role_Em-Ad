@@ -18,16 +18,16 @@
             </ItemMenu>
           </div>
         </ItemMenu>
-        <ItemMenu to="/dashboard">
+        <ItemMenu to="/folder">
           <div class="mb-[28px] flex">
-            <ItemMenu to="/dashboard">
+            <ItemMenu to="/folder">
               <md-icon>folder_open</md-icon>
             </ItemMenu>
           </div>
         </ItemMenu>
         <ItemMenu to="/dashboard">
           <div class="mb-[28px] flex">
-            <ItemMenu to="/dashboard">
+            <ItemMenu to="/team">
               <md-icon>group</md-icon>
             </ItemMenu>
           </div>
