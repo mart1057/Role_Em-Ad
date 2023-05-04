@@ -4,13 +4,13 @@
             <div class="text-[20px] font-bold">DITS Project</div>
             <div class="flex justify-between items-center mt-[24px]">
                 <div class="flex ">
-                    <button class="btn-create text-[12px] text-[#6B7490] font-bold"
+                    <button class="btn-create text-[12px] text-[#6B7490] font-bold hover:bg-sky-100"
                         @click="dailogCreateDoc = !dailogCreateDoc">Create
                         Document</button>
                     <div>
                         <vs-tooltip bottom shadow not-hover not-arrow v-model="actionFilter">
                             <div>
-                                <button class="btn-filter text-[12px] text-[#6B7490] font-bold"
+                                <button class="btn-filter text-[12px] text-[#6B7490] font-bold hover:bg-sky-100"
                                     @click="actionFilter = !actionFilter">Filter</button>
                             </div>
                             <template #tooltip>
@@ -119,9 +119,9 @@
                             </vs-tr>
                         </template>
                         <template #tbody>
-                            <vs-tr :key="i" v-for="(tr, i) in users" :data="tr" :is-selected="!!selected.includes(tr)">
-                                <vs-td checkbox>
-                                    <vs-checkbox :val="tr" v-model="selected" />
+                            <vs-tr :key="i" v-for="(tr, i) in users" :data="tr" @click="fetchData(tr)">
+                                <vs-td>
+                                    <vs-checkbox />
                                 </vs-td>
                                 <vs-td>
                                     {{ tr.name }}
@@ -143,11 +143,12 @@
                                         </div>
                                         <div class="text-[#6B7490] text-[10px]">+ {{ tr.tag.length - 2 }} more</div>
                                     </div>
-                                    <div v-else v-for=" (tag, i) in tr.tag " :key="i">
+                                    <div v-if="tr.tag.length <= 2" v-for=" (tag, i) in tr.tag " :key="i">
                                         <div class="flex">
                                             <div
                                                 class="h-[25px] mb-[5px] bg-[#6B7490] flex items-center justify-center rounded-[100px] p-[10px] text-[white]">
-                                                {{ tag.name }}</div>
+                                                {{ tag.name }}
+                                            </div>
                                         </div>
                                     </div>
                                 </vs-td>
@@ -241,7 +242,7 @@
         <b-modal centered v-model="dailogCreateDoc" size="xl" hide-backdrop hide-header-close hide-header hide-footer
             hidden-footer>
             <div class="flex justify-end">
-                <div @click="dailogCreateDoc = !dailogCreateDoc" class="cursor-pointer"><md-icon>close</md-icon></div>
+                <div @click="closeDialog()" class="cursor-pointer"><md-icon>close</md-icon></div>
             </div>
             <div class="text-[12px] font-bold text-[#6B7490]">DITS Project</div>
             <div class="flex mb-[10px]">
@@ -251,7 +252,7 @@
                         <div class="flex">
                             <div
                                 class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
-                                Darft</div>
+                                Draft</div>
                         </div>
                     </div>
                 </div>
@@ -260,7 +261,8 @@
                     <div class="flex flex-col justify-between">
                         <div class="text-[12px] font-[700] text-[#2D3349]">Add Members to workflow</div>
                         <div class="flex">
-                            <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
+                            <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
+                                :key="i" class="flex">
                                 <div class="flex justify-center items-center">
                                     <vs-avatar circle badge-color="#EFEFEF" badge-position="bottom-left"
                                         :color="data.color">
@@ -397,18 +399,26 @@
                                     v-on:keyup.enter="onEnter" />
                             </div>
                             <div class="icon-tag"><md-icon>sell</md-icon></div>
-                            <div class="flex justify-center items-center ] ml-[10px] text-center"
+                            <div class="flex justify-center items-center  ml-[10px] text-center"
                                 v-if="formDataDoc.tagArr.length != 0">
-                                <div class="h-[20px] pl-[10px] pr-[10px]  flex justify-center text-center bg-[#6B7490] text-[white] rounded-[100px] mr-[10px]"
+                                <!-- <div class="grid grid-cols-3 w-[200%]"> -->
+                                    <div class="h-[20px] pl-[10px] pr-[10px]  flex justify-center text-center bg-[#6B7490] text-[white] rounded-[100px] mr-[10px]"
                                     v-for="(tag, i) in formDataDoc.tagArr" :key="i">
                                     <div class="flex items-center justify-between">
-                                        <div class="text-[10px] flex justify-center items-center font-bold">{{ tag.name }}
+                                        <div class="text-[10px] flex justify-center items-center font-bold">{{ tag.name
+                                        }}
                                         </div>
                                         <div class="mr-[-5px] hover" @click="removeTag(i)"><md-icon class="icon-deleteTag"
                                                 style=" color:#ffffff;">close</md-icon></div>
                                     </div>
+                                <!-- </div> -->
+
                                 </div>
+                              
+
                             </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -652,7 +662,8 @@
                     <div class="mt-[10px] mr-[10px]">
                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Member</div>
                         <div class="flex">
-                            <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
+                            <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
+                                :key="i" class="flex">
                                 <div class="flex justify-center items-center">
                                     <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
                                         badge-position="bottom-right" :color="data.color">
@@ -676,7 +687,7 @@
 
                                     </vs-avatar>
                                 </div>
-                                <div class="flex justify-center items-center" v-if="i != addMember.length - 1">
+                                <div class="flex justify-center items-center" v-if="i != formDataDoc.addMember.length - 1">
                                     <md-icon style=" color:#3C7CFC;">arrow_right_alt</md-icon>
                                 </div>
                             </div>
@@ -940,7 +951,8 @@
                     <div class="mt-[10px] mr-[10px]">
                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Member</div>
                         <div class="flex">
-                            <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
+                            <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
+                                :key="i" class="flex">
                                 <div class="flex justify-center items-center">
                                     <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
                                         badge-position="bottom-right" :color="data.color">
@@ -964,8 +976,9 @@
 
                                     </vs-avatar>
                                 </div>
-                                <div class="flex justify-center items-center" v-if="i != addMember.length - 1"><md-icon
-                                        style=" color:#3C7CFC;">arrow_right_alt</md-icon></div>
+                                <div class="flex justify-center items-center" v-if="i != formDataDoc.addMember.length - 1">
+                                    <md-icon style=" color:#3C7CFC;">arrow_right_alt</md-icon>
+                                </div>
                             </div>
                         </div>
 
@@ -1310,8 +1323,8 @@
                         </div> -->
                     <div class="flex">
                         <div
-                            class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
-                            Darft</div>
+                            class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#FF5300] mr-[10px]">
+                            Reject</div>
                     </div>
                 </div>
                 <div class="flex">
@@ -1398,7 +1411,8 @@
                     <div class="mt-[10px] mr-[10px]">
                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Member</div>
                         <div class="flex">
-                            <div v-if="addMember.length != 0" v-for="(data, i) in addMember " :key="i" class="flex">
+                            <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
+                                :key="i" class="flex">
                                 <div class="flex justify-center items-center">
                                     <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
                                         badge-position="bottom-right" :color="data.color">
@@ -1595,7 +1609,7 @@ export default {
                 { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', status: true },
                 { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', status: null },
                 { id: 4, name: 'Zeesa Kewart', color: '#FFB962Q', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: false }],
-            addMember: [],
+
             dailogCreateDoc: false,
             dailogStep2: false,
             dailogStep3: false,
@@ -1608,115 +1622,35 @@ export default {
                 doc_type: '',
                 date: '',
                 note: '',
+                status: '',
                 seq_order: null,
                 after_approval: false,
                 tagArr: [],
                 allFile: [],
                 allRelated: [],
-                requiredFile: false
+                requiredFile: false,
+                addMember: [],
             },
             users: [
                 {
                     id: 1,
                     name: "IV110823_supplierBKK01.pdf",
+                    type: '',
+                    note: '',
+                    allFile: [],
+                    allRelated: [],
+                    seq_order: null,
+                    requiredFile: false,
+                    after_approval: false,
                     project: "DITS Project",
                     tag: [{ name: 'Suppiler_A' }, { name: 'Invoice' }, { name: 'Suppiler_B' },],
                     create: "8/01/2023 12:45",
                     due_date: "17/02/2023 12:45",
                     status: "Draft",
-                    member: [{ id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg' }, { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', }, { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', }],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_A' }, { name: 'Suppiler_B' }, { name: 'Invoice' },],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Approved",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Invoice' }, { name: 'Suppiler_B' }, { name: 'Suppiler_A' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Pending [Serial] 2/3",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_A' }, { name: 'Suppiler_B' }, { name: 'Invoice' }, { name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Expired",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_A' }, { name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [],
-                    action: false
-                },
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_B' }, { name: 'Invoice' }, { name: 'Suppiler_B' }, { name: 'Invoice' }],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [],
+                    member: [{ id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: true }, { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', status: true }, { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', status: true }],
                     action: false
                 },
             ]
-
         }
     },
     methods: {
@@ -1730,8 +1664,8 @@ export default {
         },
 
         addDataMember(member) {
-            this.addMember.push({
-                index: this.addMember.length + 1,
+            this.formDataDoc.addMember.push({
+                index: this.formDataDoc.addMember.length + 1,
                 id: member.id,
                 name: member.name,
                 color: member.color,
@@ -1742,7 +1676,7 @@ export default {
             this.dataMember = this.dataMember.filter((m) => {
                 return m.id != member.id
             })
-            console.log(this.addMember);
+            console.log(this.formDataDoc.addMember);
 
         },
         uploadFile() {
@@ -1786,13 +1720,21 @@ export default {
             this.users.push({
                 id: 1,
                 name: this.formDataDoc.doc_name,
+                type: this.formDataDoc.doc_type,
+                note: this.formDataDoc.note,
+                allFile: this.formDataDoc.allFile,
+                allRelated: this.formDataDoc.allRelated,
+                seq_order: this.formDataDoc.seq_order,
+                requiredFile: this.formDataDoc.requiredFile,
+                after_approval: this.formDataDoc.after_approval,
                 project: "DITS Project",
                 tag: this.formDataDoc.tagArr,
                 create: "8/01/2023 12:45",
                 due_date: "17/02/2023 12:45",
                 status: "Draft",
-                member: this.addMember,
+                member: this.formDataDoc.addMember,
                 action: false
+
             })
             this.dailogCreateDoc = false
         },
@@ -1800,12 +1742,19 @@ export default {
             this.users.push({
                 id: 1,
                 name: this.formDataDoc.doc_name,
+                type: this.formDataDoc.doc_type,
+                note: this.formDataDoc.note,
+                allFile: this.formDataDoc.allFile,
+                allRelated: this.formDataDoc.allRelated,
+                seq_order: this.formDataDoc.seq_order,
+                requiredFile: this.formDataDoc.requiredFile,
+                after_approval: this.formDataDoc.after_approval,
                 project: "DITS Project",
                 tag: this.formDataDoc.tagArr,
                 create: "8/01/2023 12:45",
                 due_date: "17/02/2023 12:45",
                 status: "Reject",
-                member: this.addMember,
+                member: this.formDataDoc.addMember,
                 action: false
             })
             this.dailogStep2 = false
@@ -1820,6 +1769,21 @@ export default {
             this.dailogStep3 = true
 
         },
+        closeDialog() {
+            this.dailogCreateDoc = false
+            this.formDataDoc.doc_name = '',
+                this.formDataDoc.doc_type = '',
+                this.formDataDoc.date = '',
+                this.formDataDoc.note = '',
+                this.formDataDoc.status = '',
+                this.formDataDoc.seq_order = null,
+                this.formDataDoc.after_approval = false,
+                this.formDataDoc.tagArr = [],
+                this.formDataDoc.allFile = [],
+                this.formDataDoc.allRelated = [],
+                this.formDataDoc.requiredFile = false,
+                this.formDataDoc.addMember = []
+        },
         startComfirm() {
 
             this.dailogRevis = true
@@ -1828,12 +1792,19 @@ export default {
             this.users.push({
                 id: 1,
                 name: this.formDataDoc.doc_name,
+                type: this.formDataDoc.doc_type,
+                note: this.formDataDoc.note,
+                allFile: this.formDataDoc.allFile,
+                allRelated: this.formDataDoc.allRelated,
+                seq_order: this.formDataDoc.seq_order,
+                requiredFile: this.formDataDoc.requiredFile,
+                after_approval: this.formDataDoc.after_approval,
                 project: "DITS Project",
                 tag: this.formDataDoc.tagArr,
                 create: "8/01/2023 12:45",
                 due_date: "17/02/2023 12:45",
-                status: "Approved",
-                member: this.addMember,
+                status: "Draft",
+                member: this.formDataDoc.addMember,
                 action: false
             })
             this.dialogSuccess = true
@@ -1849,7 +1820,7 @@ export default {
         },
         removeMember(data, i) {
             console.log(i);
-            this.addMember.splice(i, 1)
+            this.formDataDoc.addMember.splice(i, 1)
             this.dataMember.push(data)
         },
         removeFile(i) {
@@ -1858,6 +1829,39 @@ export default {
         },
         removeFileRelated(i) {
             this.formDataDoc.allRelated.splice(i, 1)
+        },
+        fetchData(data) {
+            if (data.status == "Draft") {
+                console.log(data);
+                this.dailogCreateDoc = true
+                this.formDataDoc.doc_name = data.name,
+                    this.formDataDoc.doc_type = data.type,
+                    this.formDataDoc.date = '',
+                    this.formDataDoc.status = data.staus
+                this.formDataDoc.note = data.note,
+                    this.formDataDoc.seq_order = data.seq_order,
+                    this.formDataDoc.after_approval = data.after_approval,
+                    this.formDataDoc.tagArr = data.tag,
+                    this.formDataDoc.allFile = data.allFile,
+                    this.formDataDoc.allRelated = data.allRelated,
+                    this.formDataDoc.requiredFile = false
+            }
+            else if (data.status == "Reject") {
+                console.log(data);
+                this.dialogSuccess = true
+                this.formDataDoc.doc_name = data.name,
+                    this.formDataDoc.doc_type = data.type,
+                    this.formDataDoc.date = '',
+                    this.formDataDoc.note = data.note,
+                    this.formDataDoc.seq_order = data.seq_order,
+                    this.formDataDoc.after_approval = data.after_approval,
+                    this.formDataDoc.tagArr = data.tag,
+                    this.formDataDoc.allFile = data.allFile,
+                    this.formDataDoc.allRelated = data.allRelated,
+                    this.formDataDoc.requiredFile = false
+
+            }
+
         }
     }
 

@@ -6,6 +6,10 @@ import DashBoard from '@/views/dashboard/DashBoard.vue'
 import Document from '@/views/document/Document'
 import ProjectFolder from '@/views/project/ProjectFolder'
 import UserTeam from '@/views/team/UserTeam'
+import Profile from '@/views/setting/profile/Profile'
+import Notification from '@/views/setting/notification/Notification'
+import UserManage from '@/views/setting/userManage/UserManage'
+import PlanEditor from '@/views/setting/planEditor/PlanEditor'
 
 Vue.use(VueRouter)
 
@@ -32,13 +36,33 @@ const routes = [
   },
   {
     path: '/folder',
-    name: 'Floder',
+    name: 'Folder',
     component: ProjectFolder
   },
   {
     path: '/team',
     name: 'Team',
     component: UserTeam 
+  },
+  {
+    path: '/setting/profile',
+    name: 'Profile',
+    component: Profile
+  },
+  {
+    path: '/setting/notification',
+    name: 'Notification',
+    component: Notification
+  },
+  {
+    path: '/setting/user-manage',
+    name: 'UserManage',
+    component: UserManage 
+  },
+  {
+    path: '/setting/plan-editor',
+    name: 'PlanEditor',
+    component: PlanEditor
   },
   // {
   //   path: '/about',

@@ -8,16 +8,16 @@
                 </div>
                 <template #tooltip>
                     <div class="m-[15px]">
-                        <div class="flex cursor-pointer" @click="createFolderPopup = !createFolderPopup">
+                        <div class="flex cursor-pointer hover:bg-sky-100 rounded-[5px]" @click="createFolderPopup = !createFolderPopup">
                             <div><md-icon>create_new_folder</md-icon></div>
-                            <div class="flex justify-center items-center ml-[8px]">Create Folder</div>
+                            <div class="flex justify-center items-center ml-[8px] ">Create Folder</div>
                         </div>
                         <div class="border-b-2 w-[100%] mt-[8px] mb-[8px]"></div>
-                        <div class="flex cursor-pointer">
+                        <div class="flex cursor-pointer hover:bg-sky-100 rounded-[5px]">
                             <div><md-icon>drive_folder_upload</md-icon></div>
                             <div class="flex justify-center items-center ml-[8px]">Upload Folder</div>
                         </div>
-                        <div class="flex mt-[8px] cursor-pointer">
+                        <div class="flex mt-[8px] cursor-pointer hover:bg-sky-100 rounded-[5px]">
                             <div><md-icon>upload_file</md-icon></div>
                             <div class="flex justify-center items-center ml-[8px]">Upload Document</div>
                         </div>
@@ -25,7 +25,7 @@
                 </template>
             </vs-tooltip>
             <div class="flex flex-col justify-center m-[14px]">
-                <div class="flex mb-[10px] items-center cursor-pointer" v-for="(folder, i) in myFolder" :key="folder.id"
+                <div class="flex mb-[10px] items-center cursor-pointer hover:bg-sky-100 rounded-[5px]" v-for="(folder, i) in myFolder" :key="folder.id"
                     @click="selectFolder(folder.id)">
                     <div><md-icon>folder_open</md-icon></div>
                     <div class="ml-[4px]">{{ folder.name }}</div>
@@ -40,7 +40,7 @@
             </div>
             <div class="w-[100%] flex">
                 <div class="w-[25%] h-[60vw] bg-[white] test">
-                    <div class="flex items-center justify-between m-[14px] cursor-pointer"
+                    <div class="flex items-center justify-between m-[14px] cursor-pointer hover:bg-sky-100 rounded-[5px]"
                         v-for="subFolder in typeFloder == 1 ? subFolder : subFolder2 " :key="subFolder.id">
                         <div class="flex">
                             <div class="flex items-center justify-center"><md-icon>folder_open</md-icon></div>
@@ -102,7 +102,7 @@ export default {
             createFolderPopup: false,
             openCreateFolder: false,
             nameFolder:'',
-            typeFloder: 1,
+            typeFloder: null,
             myFolder: [{ id: 1, name: 'จัดซื้อจ้าง' }, { id: 2, name: 'DITS Project' }],
             subFolder2: [{ id: 2, idFolder: 1, name: 'DITS Project1' }, { id: 4, idFolder: 1, name: 'DITS Project2' }],
             subFolder: [{ id: 1, idFolder: 2, name: 'จัดซื้อจ้าง1' }, { id: 3, idFolder: 2, name: 'จัดซื้อจ้าง2' }, { id: 5, idFolder: 2, name: 'จัดซื้อจ้าง3' }]

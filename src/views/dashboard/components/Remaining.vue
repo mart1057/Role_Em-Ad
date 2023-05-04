@@ -138,4 +138,5 @@ export default {
 .select-opt {
     border: solid 1px #E5EAF6;
 
-}</style>
+}
+</style>

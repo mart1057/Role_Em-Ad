@@ -4,9 +4,11 @@
             <div class="text-[20px] font-bold">User</div>
             <div>
                 <div class="flex mt-[20px]">
-                    <div>Employee</div>
-                    <div class="ml-[10px]">Organization</div>
-                </div>  
+                    <div @click="changeTab(true), checkTab = true" class="cursor-pointer" :class="checkTab ? 'selectTab' : ''">
+                        Employee</div>
+                    <div class="ml-[10px] cursor-pointer" :class="checkTab ? '' : 'selectTab'"
+                        @click="changeTab(false), checkTab = false">Organization</div>
+                </div>
                 <div class="border-t-2"></div>
                 <div class="flex justify-between mt-[20px]">
                     <div class="flex">
@@ -37,22 +39,43 @@
 </template>
 
 <script>
+export default {
+    data() {
+        return {
+            checkTab: true
+        }
+    },
+    methods: {
+        changeTab(a) {
+            this.$emit('changeTab', a)
+
+        }
+    }
+}
 </script>
-<style>
+<style scoped>
 .hotfix {
     position: absolute;
     top: 11.9rem;
 }
+
 input[type="search"] {
     padding-left: 32px;
 }
+
 input {
     border: solid 1px #E5EAF6;
     border-radius: 6px;
 }
+
 .select-opt,
 textarea {
     border: solid 1px #E5EAF6;
 }
 
-</style>
+.selectTab {
+    font-size: 18px;
+    font-weight: bold;
+
+
+}</style>
