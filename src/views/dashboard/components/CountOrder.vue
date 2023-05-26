@@ -64,7 +64,7 @@
                 </template>
 
             </vs-table>
-            <div class="center con-pagination mt-[3px] " v-if="dataFunnel.length != 0">
+            <div class="center con-pagination mt-[-5px] " v-if="dataFunnel.length != 0">
                 <vs-pagination buttons-dotted v-model="page" :length="3" />
             </div>
         </div>
@@ -118,7 +118,7 @@
                 </template>
 
             </vs-table>
-            <div class="center con-pagination mt-[3px] " v-if="dataPending.length != 0">
+            <div class="center con-pagination mt-[-5px]" v-if="dataPending.length != 0">
                 <vs-pagination buttons-dotted v-model="page" :length="3" />
             </div>
         </div>

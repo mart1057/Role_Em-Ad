@@ -5,9 +5,7 @@
         class="w-[26px] h-[26px] mt-[8px] bg-[#5dcbec] flex rounded-[100%] mb-[8px] text-center justify-center items-center">
         A</div>
       <div class="w-[50px] rounded-[100px] text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px]">Admin</div>
-
       <div>
-
         <ItemMenu to="/register">
           <div class="mb-[28px] mt-[24px] flex justify-between ">
             <!-- <div class="w-[3px] h-[30px] bg-[#4FBD9E] flex justify-start"></div> -->
@@ -16,13 +14,98 @@
             </ItemMenu>
           </div>
         </ItemMenu>
-        <ItemMenu to="/dashboard">
+        <vs-tooltip shadow not-hover bottom v-model="openCreateProject">
+          <div class="mb-[28px] flex cursor-pointer" @click="openCreateProject = !openCreateProject">
+            <md-icon>description</md-icon>
+          </div>
+          <template #tooltip>
+            <div class="w-[200px]">
+              <div class="flex justify-between items-center  mt-[16px]">
+                <div class="text-[16px] font-bold flex justify-center items-center text-[#6B7490]">Setting</div>
+              </div>
+              <div
+                class="flex w-[100%] h-[100%] border-[1px] border-[#E5EAF6] rounded-[6px] mt-[10px] hover:bg-sky-100 cursor-pointer ">
+                <div class="ml-[6px]"><md-icon>folder</md-icon></div>
+                <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">Create Project</div>
+              </div>
+              <div
+                class="flex w-[100%] h-[100%] border-[1px] border-[#E5EAF6] rounded-[6px] mt-[10px] hover:bg-sky-100 cursor-pointer ">
+                <div class="ml-[6px]"><md-icon>folder</md-icon></div>
+                <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">Filter</div>
+              </div>
+              <div
+                class="flex w-[100%] h-[100%] border-[1px] border-[#E5EAF6] rounded-[6px] mt-[10px] hover:bg-sky-100  cursor-pointer">
+                <div class="ml-[6px]"><md-icon>folder</md-icon></div>
+                <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">Search</div>
+              </div>
+              <div>
+                <hr>
+              </div>
+              <div>
+                <div class="flex hover:bg-sky-100 cursor-pointer">
+                  <div><md-icon>star_outline</md-icon></div>
+                  <div class="flex justify-center items-center ml-[4px] text-[#6B7490]">Favorite Document</div>
+                </div>
+                <div>
+                  <div class="flex justify-between mt-[10px] hover:bg-sky-100 cursor-pointer">
+                    <ItemMenu to="/document">
+                      <div class="flex">
+                        <div><md-icon>description</md-icon></div>
+                        <div class="flex justify-center items-center ml-[4px] text-[#6B7490]">DITS Project</div>
+                      </div>
+                    </ItemMenu>
+                    <vs-tooltip right shadow not-hover v-model="activeTooltip1">
+                      <div class="cursor-pointer" @click="activeTooltip1 = true"><md-icon>more_vert</md-icon></div>
+                      <template #tooltip>
+                        <div class="flex m-[10px] hover:bg-sky-100 cursor-pointer">
+                          <div><md-icon>delete</md-icon></div>
+                          <div class="flex justify-center items-center ml-[4px] text-[#6B7490] font-bold">Delete</div>
+                        </div>
+                      </template>
+                    </vs-tooltip>
+                  </div>
+                  <div class="flex justify-between mt-[10px] hover:bg-sky-100 cursor-pointer">
+                    <div class="flex">
+                      <div><md-icon>description</md-icon></div>
+                      <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">Logistics</div>
+                    </div>
+                    <vs-tooltip right shadow not-hover v-model="activeTooltip1">
+                      <div class="cursor-pointer" @click="activeTooltip1 = true"><md-icon>more_vert</md-icon></div>
+                      <template #tooltip>
+                        <div class="flex m-[10px] hover:bg-sky-100 cursor-pointer">
+                          <div><md-icon>delete</md-icon></div>
+                          <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">Delete</div>
+                        </div>
+                      </template>
+                    </vs-tooltip>
+                  </div>
+                  <div class="flex justify-between mt-[10px] mb-[10px] hover:bg-sky-100">
+                    <div class="flex">
+                      <div><md-icon>description</md-icon></div>
+                      <div class="flex justify-center items-center ml-[4px] text-[#6B7490] ">จัดซื้อจัดจ้าง</div>
+                    </div>
+                    <vs-tooltip right shadow not-hover v-model="activeTooltip1">
+                      <div class="cursor-pointer" @click="activeTooltip1 = true"><md-icon>more_vert</md-icon></div>
+                      <template #tooltip>
+                        <div class="flex m-[10px] hover:bg-sky-100 cursor-pointer">
+                          <div><md-icon>delete</md-icon></div>
+                          <div class="flex justify-center items-center ml-[4px] text-[#6B7490]">Delete</div>
+                        </div>
+                      </template>
+                    </vs-tooltip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </vs-tooltip>
+        <!-- <ItemMenu to="/dashboard">
           <div class="mb-[28px] flex">
             <ItemMenu to="/document">
               <md-icon>description</md-icon>
             </ItemMenu>
           </div>
-        </ItemMenu>
+        </ItemMenu> -->
         <ItemMenu to="/folder">
           <div class="mb-[28px] flex">
             <ItemMenu to="/folder">
@@ -40,8 +123,8 @@
       </div>
     </div>
     <div class="flex flex-col items-center">
-      <vs-tooltip shadow not-hover bottom v-model="activeTooltip1">
-        <div class="mb-[18px] flex cursor-pointer" @click="activeTooltip1 = !activeTooltip1">
+      <vs-tooltip shadow not-hover bottom v-model="openSetting">
+        <div class="mb-[18px] flex cursor-pointer" @click="openSetting = !openSetting">
           <md-icon>settings</md-icon>
         </div>
         <template #tooltip>
@@ -56,19 +139,22 @@
               <hr>
             </div>
             <div>
-                <div class="flex hover:bg-sky-100 cursor-pointer rounded-[5px]" @click="routToPage('/setting/profile')">
-                  <div><md-icon>person</md-icon></div>
-                  <div class="flex justify-center items-center ml-[8px] text-[#6B7490]">Profile</div>
-                </div>
-              <div class="flex mt-[16px] hover:bg-sky-100 cursor-pointer rounded-[5px] " @click="routToPage('/setting/plan-editor')">
-                <div><md-icon>article</md-icon></div>
-                <div class="flex justify-center items-center ml-[8px] text-[#6B7490] " >Plan Editor</div>
+              <div class="flex hover:bg-sky-100 cursor-pointer rounded-[5px]" @click="routToPage('/setting/profile')">
+                <div><md-icon>person</md-icon></div>
+                <div class="flex justify-center items-center ml-[8px] text-[#6B7490]">Profile</div>
               </div>
-              <div class="flex mt-[16px] hover:bg-sky-100 rounded-[5px] cursor-pointer" @click="routToPage('/setting/user-manage')">
+              <div class="flex mt-[16px] hover:bg-sky-100 cursor-pointer rounded-[5px] "
+                @click="routToPage('/setting/plan-editor')">
+                <div><md-icon>article</md-icon></div>
+                <div class="flex justify-center items-center ml-[8px] text-[#6B7490] ">Plan Editor</div>
+              </div>
+              <div class="flex mt-[16px] hover:bg-sky-100 rounded-[5px] cursor-pointer"
+                @click="routToPage('/setting/user-manage')">
                 <div><md-icon>manage_accounts</md-icon></div>
                 <div class="flex justify-center items-center ml-[8px]  text-[#6B7490]">User Management</div>
               </div>
-              <div class="flex mt-[16px] mb-[16px] hover:bg-sky-100 cursor-pointer rounded-[5px]" @click="routToPage('/setting/notification')">
+              <div class="flex mt-[16px] mb-[16px] hover:bg-sky-100 cursor-pointer rounded-[5px]"
+                @click="routToPage('/setting/notification')">
                 <div><md-icon>notifications</md-icon></div>
                 <div class="flex justify-center items-center ml-[8px] text-[#6B7490]">Notification</div>
               </div>
@@ -99,15 +185,17 @@ export default {
   data() {
     return {
       sidebarWidth,
+      openSetting: false,
+      openCreateProject: true,
       activeTooltip1: false
     }
   },
   methods: {
     routToPage(Url) {
-      this.$router.push({path: Url});
-      this.activeTooltip1 = false
-    }  
-    
+      this.$router.push({ path: Url });
+      this.openSetting = false
+    }
+
   }
 }
 </script>
@@ -133,5 +221,4 @@ export default {
   transition: 0.3s ease;
   display: flex;
   flex-direction: column;
-}
-</style>
+}</style>

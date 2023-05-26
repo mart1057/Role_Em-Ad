@@ -7,8 +7,8 @@
                     COMPANY
                 </div>
                 <div
-                    class="bg-[#3C7CFC] w-[100%] h-[55px] flex justify-center items-center rounded-b-[5px] text-[white] text-[16px] font-bold">
-                    5555</div>
+                    class="bg-[#F3F6F9] w-[100%] h-[55px] flex justify-center items-center rounded-b-[5px] text-[#2D3349] text-[16px] font-bold">
+                    Company Name</div>
             </div>
             <div class="w-[220px]  h-[145px] bg-white test2 rounded-[5px] mt-[20px] flex flex-col justify-between items-center">
                 <div class="flex justify-between mt-[10px]">
