@@ -12,7 +12,7 @@
             <div class="w-[48%] rounded-[10px] h-[177px] bg-white flex  flex-col">
                 <div class="flex justify-center">
                     <div
-                        class="w-[50px] rounded-[100px]  text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">
+                        class="w-[50px] rounded-[100px]  text-center h-[20px] flex justify-center items-center font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">
                         Owner</div>
                 </div>
                 <div class=" flex justify-between mt-[15px]">
@@ -32,7 +32,7 @@
             <div class="w-[48%] rounded-[10px] h-[177px] bg-white flex  flex-col">
                 <div class="flex justify-center">
                     <div
-                        class="w-[83px] rounded-[100px]  text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">
+                        class="w-[83px] rounded-[100px]  flex justify-center items-center text-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] mt-[18px] text-white">
                         Empolyee</div>
                 </div>
                 <div class=" flex justify-between mt-[15px]">

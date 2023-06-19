@@ -1,5 +1,5 @@
 <template>
-    <div class="mr-[55px] p-[35px]" id="login">
+    <div class="mr-[55px] p-[35px] w-[100%] h-[100%]" id="login">
         <div>
             <img class="w-[85px] h-[27px] mb-[32px]  " :src="logoClicksBiz" alt="">
         </div>
@@ -13,8 +13,8 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="mb-[5px] text-[#2D3349] mt-[20px] text-[12px]">Password</span>
-                    <input class="border-[#D2D2D2] border-[1px] w-[421px] h-[40px] rounded-[6px]" 
-                        type="password" placeholder="********" v-model="dataLogin.password"/>
+                    <input class="border-[#D2D2D2] border-[1px] w-[421px] h-[40px] rounded-[6px]" type="password"
+                        placeholder="********" v-model="dataLogin.password" />
                 </div>
                 <div class="flex justify-between mt-[18px]">
                     <div class="flex">
@@ -24,8 +24,10 @@
                     <div class="text-[12px] text-[#4FBD9E]">Forgot your password?</div>
                 </div>
                 <div class="flex flex-col">
-                    <button class="bg-[#4FBD9E] text-[15px] w-[421px] h-[45px] rounded-[8px] mt-[25px] text-white" @click="submitLogin">Sign in</button>
-                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a href="/register" class=" text-[#4FBD9E]">Sign up for free</a> </span>
+                    <button class="bg-[#4FBD9E] text-[15px] w-[421px] h-[45px] rounded-[8px] mt-[25px] text-white"
+                        @click="submitLogin()">Sign in</button>
+                    <span class="text-center text-[12px] mt-[18px] text-[#9E9FA0]"> Don’t have an account? <a
+                            href="/register" class=" text-[#4FBD9E]">Sign up for free</a> </span>
                 </div>
                 <div class="flex justify-between mt-[18px] items-center">
                     <hr width="193px">
@@ -33,13 +35,15 @@
                     <hr width="193px">
                 </div>
                 <div class="flex justify-between mt-[18px]">
-                    <button class="border-[1px] rounded-[4px] w-[200px] h-[40px] text-[#6B7490] font-bold  flex justify-center items-center">
+                    <button
+                        class="border-[1px] rounded-[4px] w-[200px] h-[40px] text-[#6B7490] font-bold  flex justify-center items-center">
                         <div class="flex items-center">
                             <img class="mr-[8px] w-[18px] h-[18px] text-center" :src="logo_google" />
                             <span class="text-[12px]"> Sing in With Google</span>
                         </div>
                     </button>
-                    <button class="border-[1px] rounded-[4px] w-[200px] h-[40px] text-[#6B7490] font-bold bg-[#4776D0] flex justify-center items-center">
+                    <button
+                        class="border-[1px] rounded-[4px] w-[200px] h-[40px] text-[#6B7490] font-bold bg-[#4776D0] flex justify-center items-center">
                         <div class="flex items-center">
                             <img class="mr-[8px] w-[18px] h-[18px] text-center" :src="logo_facebook" />
                             <span class="text-[12px] text-white"> Sing in With Google</span>
@@ -55,33 +59,62 @@
 import logoClicksBiz from '../../assets/image/logo-clicksBiz.png'
 import logo_facebook from '@/assets/image/logo_facebook.png'
 import logo_google from '@/assets/image/logo_google.png'
+import router from '@/router'
+import axios from 'axios'
 export default {
     data() {
         return {
             logoClicksBiz,
             logo_google,
             logo_facebook,
-            dataLogin:{
-                email:'',
-                password:'',
-                remember:false
+            dataLogin: {
+                email: '',
+                password: '',
+                remember: false
             }
         }
     },
-    methods:{
-        submitLogin(){
-            console.log(this.dataLogin)
+    methods: {
+        submitLogin() {
+            this.$store.dispatch('loginUser',this.dataLogin) 
+            // axios.post('http://27.254.144.88:1337/api' + '/auth/local', {
+            //     "identifier": this.dataLogin.email,
+            //     "password": this.dataLogin.password
+            // }).then((resp)=>{
+            //     localStorage.setItem("is_login",true)
+            //     // console.log(resp.data.user);
+            //     this.$store.commit("doLogin",JSON.stringify(this.dataLogin));
+            // }).finally(()=>{
+            //    
+            // })
+            // router
+            //     .push('/Dashboard')
+            
+            // console.log(JSON.stringify(this.dataLogin));
+            // this.$store.commit("changeDrawer", false);
+            
+            // this.$store.state.sis_login = true
+            
+
         }
-    }
+    },
+    mounted: function () {
+        if (this.$store.state.is_login == false) {
+            localStorage.clear();
+        }
+    },
 }
 </script>
 <style scoped>
-#login{
+
+#login {
     width: 100%;
     height: 100%;
     background-color: rgb(255, 255, 255) !important;
 }
-input[type=text],[type=email],
+
+input[type=text],
+[type=email],
 [type=password] {
     font-family: 'IBM Plex Sans Thai', sans-serif;
     padding: 12px 20px;

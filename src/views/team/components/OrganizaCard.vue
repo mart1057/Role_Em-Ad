@@ -31,6 +31,6 @@
 
 <style>
 .test2 {
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.12);
+    box-shadow:  5px 5px 5px 5px rgba(0, 0, 0, 0.12);
 }
 </style>

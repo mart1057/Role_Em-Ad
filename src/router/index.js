@@ -10,6 +10,10 @@ import Profile from '@/views/setting/profile/Profile'
 import Notification from '@/views/setting/notification/Notification'
 import UserManage from '@/views/setting/userManage/UserManage'
 import PlanEditor from '@/views/setting/planEditor/PlanEditor'
+import NotificationEmployee from '@/views/setting/notification/NotificationEm.vue'
+import DocType from '@/views/DocumentType/DocType.vue'
+import DashBoardEm from '@/views/dashEmployee/DashBoardEm.vue'
+
 
 Vue.use(VueRouter)
 
@@ -28,6 +32,11 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: DashBoard 
+  },
+  {
+    path: '/DashBoardEm',
+    name: 'Dashboard',
+    component: DashBoardEm
   },
   {
     path: '/document',
@@ -55,6 +64,11 @@ const routes = [
     component: Notification
   },
   {
+    path: '/setting/notificationEmployee',
+    name: 'Notification',
+    component: NotificationEmployee
+  },
+  {
     path: '/setting/user-manage',
     name: 'UserManage',
     component: UserManage 
@@ -63,6 +77,11 @@ const routes = [
     path: '/setting/plan-editor',
     name: 'PlanEditor',
     component: PlanEditor
+  },
+  {
+    path: '/setting/document-type',
+    name: 'DocumentType',
+    component: DocType
   },
   // {
   //   path: '/about',
