@@ -53,15 +53,13 @@
                                     <div class="select-opt rounded-[6px] w-[100%] min-h-[60px] p-[8px]">
                                         <div class="flex">
                                             <div class="text-[12px] flex justify-center items-center mr-[2px]">
-                                                1.หนังซื้อจัดจ้าง/
+                                                <div v-if="dataListDoc.settingScheme.length > 0">1.</div>
                                                 <div class="flex justify-start"
                                                     v-for="(data, i) in dataListDoc.settingScheme" :key="i">
                                                     <span
                                                         class="border-[1px] border-[#E5EAF6] rounded-[10px] pt-[4px] pb-[4px] pr-[8px] pl-[8px] ml-[2px] mr-[2px]">
                                                         {{ data.text }}
                                                     </span>
-                                                    <span
-                                                        class="flex justify-center items-center ml-[2px] mr-[2px]">/</span>
                                                 </div>
                                             </div>
                                             <div>
@@ -69,13 +67,27 @@
                                                     <div @click="addScheme = !addScheme" class="cursor-pointer"><md-icon
                                                             style="color:#3C7CFC ;">add_circle</md-icon></div>
                                                     <template #tooltip>
-                                                        <div class="m-[10px]">
-                                                            <div class="flex justify-start mt-[5px]"
-                                                                v-for="(data, i) in fomartScheme" :key="i"
-                                                                @click="addSchemeSetting(data)"><span
-                                                                    class="border-[1px] border-[#E5EAF6] rounded-[10px] pt-[4px] pb-[4px] pr-[8px] pl-[8px]">{{
-                                                                        data.text }}
-                                                                    <span class="text-[#3C7CFC]">></span></span></div>
+                                                        <div class="flex">
+                                                            <div class="m-[10px]">
+                                                                <input
+                                                                    class="flex justify-start rounded-[10px] pt-[4px] pb-[4px] pr-[8px] pl-[8px]"
+                                                                    placeholder="text..." v-model="text"
+                                                                    @keyup.enter="inputText(text)" />
+                                                                <div class="flex justify-start mt-[5px] cursor-pointer"
+                                                                    v-for="(data, i) in fomartScheme" :key="i"
+                                                                    @click="addSchemeSetting(data)"><span
+                                                                        class="border-[1px] border-[#E5EAF6] rounded-[10px] pt-[4px] pb-[4px] pr-[8px] pl-[8px]">{{
+                                                                            data.text }}
+                                                                        <span class="text-[#3C7CFC]">></span></span></div>
+                                                            </div>
+                                                            <div class="m-[10px]">
+                                                                <div class="flex justify-start mt-[5px] cursor-pointer"
+                                                                    v-for="(data, i) in fomartMark" :key="i"
+                                                                    @click="addSchemeSetting(data)"><span
+                                                                        class="border-[1px] border-[#E5EAF6] rounded-[10px] pt-[4px] pb-[4px] pr-[8px] pl-[8px]">{{
+                                                                            data.text }}
+                                                                        <span class="text-[#3C7CFC]">></span></span></div>
+                                                            </div>
                                                         </div>
                                                     </template>
                                                 </vs-tooltip>
@@ -94,9 +106,8 @@
                                     <div class="text-[12px] font-medium">Preview</div>
                                     <div class="mt-[8px]">
                                         <div class="select-opt rounded-[6px] w-[100%]  p-[8px]">
-                                            <div class="text-[12px]">1.หนังซื้อจัดจ้าง<spn
-                                                    v-for="(data, i) in dataListDoc.settingScheme " :key="i"> {{ data.val }}
-                                                    <span v-if="i != dataListDoc.settingScheme.length - 1">/</span>
+                                            <div class="text-[12px]">1.<spn v-for="(data, i) in dataListDoc.settingScheme "
+                                                    :key="i"> {{ data.val }}
                                                 </spn>
                                             </div>
                                         </div>
@@ -156,28 +167,36 @@ import { testEiEi } from '@/Backend/module'
 export default {
     data() {
         return {
+            text: '',
+            numbering: '0001',
             is_edit: false,
             dailogCreate: false,
             addScheme: false,
             day_without0: '',
             day_with0: '',
             mouth_with0: '',
+            mouth_text: 'Oct',
             mouth_without0: '',
             year2: '',
             year4: '',
+            mark:{
+                under:'_',
+                slash:'/',
+                dash:'-'
+            },
             dataListDoc: {
                 id: '',
                 name: '',
                 numbering: 0,
                 settingScheme: [],
                 active: true,
+                pattern: [],
                 frequency: '',
                 approved_folder: '',
                 create_folder: ''
             },
-            fomartScheme: [
-
-            ],
+            fomartScheme: [],
+            fomartMark: [],
             dataDoc_type: [],
             docFolder: []
         }
@@ -186,9 +205,20 @@ export default {
         addSchemeSetting(data) {
             this.dataListDoc.settingScheme.push(data)
         },
+        inputText(text) {
+            this.dataListDoc.settingScheme.push(
+                {
+                    val: this.text,
+                    key: this.text,
+                    text: text
+                },
+            )
+            this.text = ''
+        },
         craeteDocType() {
             this.dataListDoc.id = ''
             this.dataListDoc.active = true
+            this.dataListDoc.settingScheme = []
             this.dataListDoc.approved_folder = ''
             this.dataListDoc.create_folder = ''
             this.dataListDoc.frequency = ''
@@ -217,8 +247,9 @@ export default {
                     this.dataListDoc.active = resp.data.attributes.documentActive
                     this.dataListDoc.approved_folder = resp.data.attributes.approveFolder.data.id
                     this.dataListDoc.create_folder = resp.data.attributes.createFolder.data.id
-                    this.dataListDoc.frequency = resp.data.attributes.resetFrequency
-                    this.dataListDoc.name = resp.data.attributes.documentTypeName
+                    this.dataListDoc.frequency = resp.data.attributes.resetFrequency,
+                        this.dataListDoc.pattern = this.convertBack(resp.data.attributes.pattern),
+                        this.dataListDoc.name = resp.data.attributes.documentTypeName
                     this.dataListDoc.numbering = resp.data.attributes.nextNumber
                 })
         },
@@ -227,10 +258,9 @@ export default {
             setTimeout(() => {
                 this.getDocType()
             }, 500)
-
         },
         getDocFloder() {
-            fetch('http://27.254.144.88:1337/api' + '/document-folders?populate=*')
+            fetch('http://27.254.144.88:1337/api' + '/document-folders?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id)
                 .then(response => response.json())
                 .then((resp) => {
                     const arr = []
@@ -240,6 +270,9 @@ export default {
 
         },
         saveOrEdit() {
+            const keys = this.dataListDoc.settingScheme.map(item => item.key);
+            const result = keys.join('');
+            console.log(result);
             if (this.is_edit == true) {
                 axios.put('http://27.254.144.88:1337/api' + '/document-types/' + this.dataListDoc.id, {
                     "data": {
@@ -248,6 +281,7 @@ export default {
                         "nextNumber": this.dataListDoc.numbering,
                         "resetFrequency": this.dataListDoc.frequency,
                         "createFolder": this.dataListDoc.create_folder,
+                        "pattern": result,
                         "approveFolder": this.dataListDoc.approved_folder
                     }
                 })
@@ -264,15 +298,135 @@ export default {
                         "documentActive": this.dataListDoc.active,
                         "nextNumber": this.dataListDoc.numbering,
                         "resetFrequency": this.dataListDoc.frequency,
+                        "pattern": result,
+                        "organization":this.$store.state.userDetail.organization.id,
                         "createFolder": this.dataListDoc.create_folder,
                         "approveFolder": this.dataListDoc.approved_folder
                     }
                 })
                     .then(() => {
+                        console.log(this.dataListDoc.settingScheme);
                         this.dailogCreate = false
                         this.getDocType()
                     })
             }
+        },
+        convertBack(data) {
+            console.log(data);
+            this.dataListDoc.settingScheme = []
+            const day_now = new Date("May 3, 2020 11:28:00");
+            const words = data.split(/([/_-])/);
+            console.log(words);
+            words.forEach((data) => {
+                if (data == 'DD') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '0' + day_now.getDate(),
+                            key: 'DD',
+                            text: 'Day of month (with 0)'
+
+                        })
+                }
+                else if (data == 'D') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: day_now.getDate(),
+                            key: 'D',
+                            text: 'Day of month (without 0)'
+
+                        })
+                }
+                else if (data == 'MM') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '0' + day_now.getMonth() + 1,
+                            key: 'MM',
+                            text: 'Day of month (with 0)'
+
+                        })
+                }
+                else if (data == 'M') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: day_now.getMonth() + 1,
+                            key: 'M',
+                            text: 'Day of month (without 0)'
+
+                        })
+                }
+                else if (data == 'MMM') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: 'Oct',
+                            key: 'MMM',
+                            text: 'Mount Text'
+
+                        })
+                }
+                else if (data == 'YY') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '22',
+                            key: 'YY',
+                            text: 'Year (2 digits)'
+
+                        })
+                }
+                else if (data == 'YYYY') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '22',
+                            key: 'YYYY',
+                            text: 'Year (4 digits)'
+
+                        })
+                }
+                else if (data == 'NNNN') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '0001',
+                            key: 'NNNN',
+                            text: 'Numbering'
+
+                        })
+                }
+                else if (data == '-') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '-',
+                            key: '-',
+                            text: '-'
+
+                        })
+                }
+                else if (data == '/') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '/',
+                            key: '/',
+                            text: '/'
+
+                        })
+                }
+                else if (data == '_') {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: '_',
+                            key: '_',
+                            text: '_'
+
+                        })
+                }
+                else {
+                    this.dataListDoc.settingScheme.push(
+                        {
+                            val: data,
+                            key: data,
+                            text: data
+
+                        })
+                }
+            })
         }
     },
     mounted() {
@@ -305,34 +459,64 @@ export default {
         this.year4 = day_now.getFullYear()
         let Year2 = day_now.getFullYear()
         this.year2 = Year2.toString().slice(2, 4)
-
         this.fomartScheme.push(
             {
+                val: this.numbering,
+                key: 'NNNN',
+                text: 'Numbering'
+            },
+            {
                 val: this.day_with0,
+                key: 'DD',
                 text: 'Day of month (with 0)'
             },
             {
                 val: this.day_without0,
+                key: 'D',
                 text: 'Day of month (without 0)'
             },
             {
+                val: this.mouth_text,
+                key: 'MMM',
+                text: 'Mount Text'
+            },
+            {
                 val: this.mouth_with0,
+                key: 'MM',
                 text: 'Mount (with 0)'
             },
             {
                 val: this.mouth_without0,
+                key: 'M',
                 text: 'Mount (without 0)'
-
             },
             {
                 val: this.year4,
+                key: 'YYYY',
                 text: 'Year (4 digits)'
             },
             {
                 val: this.year2,
-                text: 'Year (1 digits)'
+                key: 'YY',
+                text: 'Year (2 digits)'
             },
-
+        )
+        this.fomartMark.push(
+            {
+                val: this.mark.under,
+                key: this.mark.under,
+                text: this.mark.under
+            },
+            {
+                val: this.mark.dash,
+                key:  this.mark.dash,
+                text: this.mark.dash
+            },
+            {
+                val:  this.mark.slash,
+                key:  this.mark.slash,
+                text:  this.mark.slash
+            },
         )
         console.log("วันที่มี 0: " + this.day_with0);
         console.log("วันที่ไม่มี 0: " + this.day_without0);

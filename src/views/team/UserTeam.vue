@@ -1,13 +1,18 @@
 <template>
     <div>
         <div class="m-[10px]">
-            <UserFilter @changeTab="onClickChild"></UserFilter>
+            <UserFilter @changeTab="onClickChild" @filterUser="getTeam"></UserFilter>
         </div>
         <div class="m-[10px]" v-if="this.checkTab">
-            <MemberCard></MemberCard>
+            <div v-if="$store.state.role.userView">
+                <MemberCard :team="team"></MemberCard>
+            </div>
+
         </div>
         <div class="m-[10px]" v-else>
-            <OrganizaCard></OrganizaCard>
+            <div v-if="$store.state.role.companyView">
+                <OrganizaCard></OrganizaCard>
+            </div>
         </div>
     </div>
 </template>
@@ -21,19 +26,29 @@ export default {
         MemberCard,
         OrganizaCard
     },
-    data(){
-        return{
-            checkTab:true,
+    data() {
+        return {
+            checkTab: true,
+            team: [],
         }
     },
-    methods:{
-        onClickChild (value) {
-          this.checkTab = value
-      },
+    mounted() {
+        // this.getTeam()
+    },
+    methods: {
+        onClickChild(value) {
+            this.checkTab = value
+        },
+        getTeam(role,team,seaech) {
+            this.team = []
+            fetch('http://27.254.144.88:1337/api' + '/users?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id
+                + '&filters[org_role][id][$containsi]=' + role + '&filters[team][id][$containsi]=' + team+'&filters[firstName][$containsi]='+seaech)
+                .then(response => response.json())
+                .then((resp) => {
+                    this.team = resp
+                })
+        },
     }
 }
 </script>
-<style>
-
-
-</style>
+<style></style>

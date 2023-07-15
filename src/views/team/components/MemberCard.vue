@@ -26,32 +26,36 @@
 
 <script>
 export default {
+    props: {
+        team: { type: Array }
+    },
     data() {
         return {
-            memberData: [
-                { id: 1, name: 'Aharon Aarr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
-                { id: 2, name: 'Bharon Barr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
-                { id: 3, name: 'Charon Carr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
-                { id: 4, name: 'Dharon Darr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
-                { id: 5, name: 'Dharon Darr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
-            ],
-            team: [],
+            // memberData: [
+            //     { id: 1, name: 'Aharon Aarr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
+            //     { id: 2, name: 'Bharon Barr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
+            //     { id: 3, name: 'Charon Carr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
+            //     { id: 4, name: 'Dharon Darr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
+            //     { id: 5, name: 'Dharon Darr', rank: 'MKT Team', email: 'Sharon Carr', phone: '+66 67 144 2370', rankAKA: 'Marketing Manager', img: 'https://r1.ilikewallpaper.net/iphone-wallpapers/download/85429/spiderman-2002-iphone-wallpaper-ilikewallpaper_com.jpg' },
+            // ],
+            teamData: [],
             
         }
     },
     mounted(){
-        this.getTeam()
+        this.teamData = this.team
+        // this.getTeam()
 
     },
     methods:{
-        getTeam() {
-            fetch('http://27.254.144.88:1337/api' + '/users?populate=*')
-                .then(response => response.json())
-                .then((resp) => {
-                    this.team=resp
-                    console.log(this.team);
-                })
-        },
+        // getTeam() {
+        //     fetch('http://27.254.144.88:1337/api' + '/users?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id)
+        //         .then(response => response.json())
+        //         .then((resp) => {
+        //             this.team=resp
+        //             console.log(this.team);
+        //         })
+        // },
     }
 }
 </script>

@@ -5,23 +5,29 @@
             <div class="m-20px">
                 <div class="flex justify-between">
                     <div class="text-[20px] font-medium">Create Project</div>
-                    <div class="cursor-pointer" @click="createMainProject=false"><md-icon>close</md-icon></div>
+                    <div class="cursor-pointer" @click="closePopup()"><md-icon>close</md-icon></div>
                 </div>
                 <div class="grid grid-cols-2 w-[100%] gap-2 mt-[30px]">
                     <div class="flex">
                         <div>
-                            <div class="text-[18px] font-medium">Code</div>
-                            <div><input class="mt-[8px] w-[72px] h-[38px] rounded-[6px]" v-model="model" readonly /></div>
-                        </div>
-                        <div class="ml-[18px]">
                             <div class="text-[18px] font-medium">Project Name</div>
-                            <div><input class="mt-[8px] w-[424px] h-[38px] rounded-[6px]" v-model=" formData.name"/></div>
+                            <div><input class="mt-[8px] w-[424px] h-[38px] rounded-[6px]" v-model="formData.name" /></div>
+                            <div v-if="this.errName != ''" class="text-[red] text-[12px]">Please input Project Name</div>
                         </div>
                     </div>
                     <div>
                         <div class="ml-[30px]">
                             <div class="text-[18px] font-medium">Default Document Type</div>
-                            <div><input class="mt-[8px] w-[424px] h-[38px] rounded-[6px]" v-model="formData.defaultType"/></div>
+                            <div><select class="mt-[8px] w-[424px] h-[38px] rounded-[6px] select-opt"
+                                    v-model="formData.defaultType">
+                                    <option disabled value="">Select...</option>
+                                    <option v-for="(type, i) in doc_type" :value="type.id">{{
+                                        type.attributes.documentTypeName
+                                    }}
+                                    </option>
+                                </select>
+                                <div v-if="errDocType" class="text-[red] text-[12px]">{{ errDocType }} </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,7 +122,8 @@
                                         class="w-[32px] fix-h flex justify-between items-center  bg-slate-500 rounded-[100%]" />
 
                                     <div class="flex justify-between items-center ml-[12px]">{{ data.email }}</div>
-                                    <div class="flex justify-between items-center ml-[12px]">{{ data.role}} | {{ data.team}}
+                                    <div class="flex justify-between items-center ml-[12px]">{{ data.role }} | {{ data.team
+                                    }}
                                     </div>
                                     <div class="flex justify-between items-center ml-[12px]"><md-icon>home</md-icon></div>
                                 </div>
@@ -152,7 +159,7 @@
                             </vs-radio>
                         </div>
                         <div class="ml-[30px] flex justify-start mt-[8px]">
-                            <vs-radio v-model="formData.viewPermission" :vale="false">
+                            <vs-radio v-model="formData.viewPermission" :val="false">
                                 <div class="text-[12px] font-semibold">View only documents that are related to users</div>
                             </vs-radio>
                         </div>
@@ -167,65 +174,85 @@
     </div>
 </template>
 <script>
+import router from '@/router'
 import axios from 'axios'
 export default {
     props: {
-        openPopup: { type: Boolean, required: true }
+        openPopup: { type: Boolean }
     },
     data() {
         return {
+            errName:'',
+            errDocType:'' ,
             picked: false,
-            model:'001',
+            model: '',
+            id_project: '',
+            name_project: '',
             createMainProject: false,
             dataMember: [],
             dataTeam: [],
+            doc_type: [],
             actionAddMember: false,
             actionAddMTeam: false,
             formData: {
                 addMember: [],
                 addTeam: [],
-                name:'',
-                defaultType:'',
-                viewPermission:null,
-            }
+                name: '',
+                defaultType: '',
+                viewPermission: true,
+            },
         }
     },
     mounted() {
         this.createMainProject = this.openPopup
         this.getUsers()
         this.getTeam()
+        this.fetchDocType()
     },
     methods: {
+        closePopup() {
+            this.createMainProject = false
+            router.push({
+                path: '/document?favorte=true&name=Favorite%20Documents',
+            })
+        },
+        fetchDocType() {
+            fetch('http://27.254.144.88:1337/api' + '/document-types?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id)
+                .then(response => response.json())
+                .then((resp) => {
+                    const arr = []
+                    arr.push(resp.data)
+                    this.doc_type = arr[0]
+                })
+        },
         getUsers() {
-            fetch('http://27.254.144.88:1337/api' + '/users?populate=*')
+            fetch('http://27.254.144.88:1337/api' + '/users?filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id + '&populate=*')
                 .then(response => response.json())
                 .then((resp) => {
                     console.log(resp);
                     resp.forEach((data, i) => {
                         this.dataMember.push({
-                            role:data.role.name,
+                            role: data.role.name,
                             name: data.firstName + ' ' + data.lastName,
                             img: data.profilePic == null ? '' : 'http://27.254.144.88:1337' + data.profilePic.url,
                             id: data.id,
                             email: data.email,
                             index: i + 1,
-                            team:data.team.teamName
+                            team: data.team?.teamName
                         })
                     })
-
+                    console.log(this.dataMember);
                 })
         },
-
         addDataMember(member) {
-            console.log(member);
             this.formData.addMember.push({
                 index: this.formData.addMember.length + 1,
                 id: member.id,
                 name: member.name,
                 email: member.email,
-                role:member.role,
+                role: member.role,
                 img: member.img,
-                team:member.team
+                team: member.team
             })
             this.actionAddMember = false
             this.dataMember = this.dataMember.filter((m) => {
@@ -238,10 +265,9 @@ export default {
             this.dataMember.push(data)
         },
         getTeam() {
-            fetch('http://27.254.144.88:1337/api' + '/teams?populate=*')
+            fetch('http://27.254.144.88:1337/api' + '/teams?filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id + '&populate=*')
                 .then(response => response.json())
                 .then((resp) => {
-                    console.log(resp);
                     resp.data.forEach((data, i) => {
                         this.dataTeam.push({
                             name: data.attributes.teamName,
@@ -258,7 +284,6 @@ export default {
                 name: member.name,
                 email: member.email,
                 img: member.img,
-              
             })
             this.actionAddTeam = false
             this.dataTeam = this.dataTeam.filter((m) => {
@@ -271,27 +296,54 @@ export default {
             this.dataTeam.push(data)
         },
         createProject() {
-            const team =  this.formData.addTeam.map(item => item.id);
-            const member =this.formData.addMember.map(item => item.id)
-            axios.post('http://27.254.144.88:1337/api' + '/projects', {
-                "data": {
-                    "projectName": this.formData.name,
-                    // "organization": 1,
-                    // "owner": 1,
-                    "member":member,
-                    "teamMember":team,
-                    // "defaultType": 5,
-                    "viewPermission":this.formData.viewPermission
-                }
-            }).then(()=>{
-                this.createMainProject = false
-            }).finally(()=>{
-                this.formData.addMember= [],
-                this.formData.addTeam= [],
-                this.formData.name='',
-                this.formData.defaultType='',
-                this.formData.viewPermission=null
+            this.errName = ''
+            this.errDocType = this.formData.defaultType == ''?'Please select Document Type':''
+            const team = this.formData.addTeam.map(item => item.id);
+            const member = this.formData.addMember.map(item => item.id)
+            team.forEach((team) => {
+                fetch('http://27.254.144.88:1337/api' + '/users?filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id + '&filters[team][id][$eq]=' + team + '&populate=*')
+                    .then(response => response.json())
+                    .then((resp) => {
+                        resp.forEach((data, i) => {
+                            console.log(data.id);
+                            member.push(
+                                data.id,
+                            )
+                        })
+                    })
             })
+            setTimeout(() => {
+                axios.post('http://27.254.144.88:1337/api' + '/projects', {
+                    "data": {
+                        "projectName": this.formData.name,
+                        "organization": this.$store.state.userDetail.organization.id,
+                        // "owner": 1,
+                        "member": member,
+                        "createBy": this.$store.state.userInfo.id,
+                        "teamMember": team,
+                        "defaultType": this.formData.defaultType,
+                        "viewPermission": this.formData.viewPermission
+                    }
+                }).then((resp) => {
+                    console.log(resp.data.data.id);
+                    this.createMainProject = false
+                    router.push({
+                        path: '/document',
+                        query: { project: resp.data.data.id, name: resp.data.data.attributes.projectName },
+                    })
+                    window.location.reload()
+                }).catch((err)=>{
+                    this.errName = err.message
+
+                }).finally(() => {
+                    this.formData.addMember = [],
+                        this.formData.addTeam = [],
+                        this.formData.name = '',
+                        this.formData.defaultType = '',
+                        this.formData.viewPermission = true
+                })
+            }, 500)
+
         }
     }
 }
@@ -300,12 +352,16 @@ export default {
 .fix-h {
     height: 32px !important;
 }
-input[type="search"] {
-    padding-left: 32px;
-}
-input {
+
+.select-opt,
+textarea {
     border: solid 1px #E5EAF6;
-    border-radius: 6px;
 }
 
+.selectTab {
+    font-size: 18px;
+    font-weight: bold;
+
+
+}
 </style>

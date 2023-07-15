@@ -7,7 +7,7 @@
       </div>
       <div
         class="w-[auto] rounded-[100px] pl-[5px] pr-[5px] text-center flex justify-center items-center h-[20px] font-medium bg-[#3C7CFC] text-[12px]">
-        {{ $store.state.role }}</div>
+        {{ $store.state.userDetail.role.name  }}</div>
       <div>
         <ItemMenu to="/register">
           <div class="mb-[28px] mt-[24px] flex justify-between ">
@@ -108,7 +108,7 @@
               <div class="text-[16px] font-bold flex justify-center items-center text-[#6B7490]">Setting</div>
               <div
                 class="w-[auto] rounded-[100px] flex justify-center items-center pl-[10px] pr-[10px] h-[20px] font-medium bg-[#3C7CFC] text-[12px] text-white">
-                {{ $store.state.role }}</div>
+                {{$store.state.userDetail.role.name }}</div>
             </div>
             <div>
               <hr>

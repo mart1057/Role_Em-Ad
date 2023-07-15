@@ -31,57 +31,96 @@ const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: DashBoard 
+    component: DashBoard,
+    meta: {
+      title:'Dashboard'
+    }
   },
   {
     path: '/DashBoardEm',
     name: 'Dashboard',
-    component: DashBoardEm
+    component: DashBoardEm,
+    meta: {
+      title:'Dashboard'
+    }
   },
   {
     path: '/document',
     name: 'Document',
-    component: Document
+    component: Document,
+    meta: {
+      title:'Document'
+    }
   },
   {
     path: '/folder',
     name: 'Folder',
-    component: ProjectFolder
+    component: ProjectFolder,
+    meta: {
+      title:'Project'
+    }
   },
   {
     path: '/team',
     name: 'Team',
-    component: UserTeam 
+    component: UserTeam ,
+    meta: {
+      title:'Team'
+    }
   },
   {
     path: '/setting/profile',
     name: 'Profile',
-    component: Profile
+    component: Profile,
+    meta: {
+      title:'Setting',
+      desc:'Profile'
+    }
   },
   {
     path: '/setting/notification',
     name: 'Notification',
-    component: Notification
+    component: Notification,
+    meta: {
+      title:'Setting',
+      desc:' Notification'
+    }
   },
   {
     path: '/setting/notificationEmployee',
     name: 'Notification',
-    component: NotificationEmployee
+    component: NotificationEmployee,
+    meta: {
+      title:'Setting',
+      desc:' Notification'
+    }
   },
   {
     path: '/setting/user-manage',
     name: 'UserManage',
-    component: UserManage 
+    component: UserManage,
+    meta: {
+      title:'Setting',
+      desc:'User'
+    }  
   },
   {
     path: '/setting/plan-editor',
     name: 'PlanEditor',
-    component: PlanEditor
+    component: PlanEditor,
+    meta: {
+      title:'Setting',
+      desc:'Plan'
+    } 
   },
   {
     path: '/setting/document-type',
     name: 'DocumentType',
-    component: DocType
+    component: DocType,
+    meta: {
+      title:'Setting',
+      desc:'Document Type'
+    } 
   },
   // {
   //   path: '/about',

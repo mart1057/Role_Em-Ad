@@ -35,7 +35,7 @@
                     </div>
                     <div
                         class="w-[auto] rounded-[100px] pl-[5px] pr-[5px] text-center flex justify-center items-center h-[20px] font-medium bg-[#3C7CFC] text-[12px] text-white mt-[15px]">
-                        {{ $store.state.role }}</div>
+                        Owner</div>
                 </div>
                 <div class="grid grid-cols-4 w-[100%] gap-4 mt-[25px]">
                     <div>
@@ -249,7 +249,7 @@ export default {
                 axios.post('http://27.254.144.88:1337/api' + '/signatures', {
                     "data": {
                         "signatureName": resp.data[0].name,
-                        "user_signature": 3,
+                        "id_user": this.$store.state.userInfo.id,
                         "filePath": 'http://27.254.144.88:1337' + resp.data[0].url,
                         "default": true,
                         "fileSize": resp.data[0].size
@@ -265,7 +265,7 @@ export default {
         },
         getSignalLits() {
             this.filePng = []
-            fetch('http://27.254.144.88:1337/api' + '/signatures')
+            fetch('http://27.254.144.88:1337/api' + '/signatures?filters[id_user][$eq]='+ this.$store.state.userInfo.id)
                 .then(response => response.json())
                 .then((resp) => {
                     console.log(resp);
@@ -276,7 +276,7 @@ export default {
 
         },
         getRole() {
-            fetch('http://27.254.144.88:1337/api' + '/org-roles')
+            fetch('http://27.254.144.88:1337/api' + '/org-roles?filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id + '&populate=*')
                 .then(response => response.json())
                 .then((resp) => {
                     const arr = []
@@ -285,7 +285,7 @@ export default {
                 })
         },
         getOrg() {
-            fetch('http://27.254.144.88:1337/api' + '/organizations')
+            fetch('http://27.254.144.88:1337/api' + '/organizations?filters[id][$eq]=' + this.$store.state.userDetail.organization.id + '&populate=*')
                 .then(response => response.json())
                 .then((resp) => {
                     const arr = []
@@ -294,7 +294,7 @@ export default {
                 })
         },
         getTeam() {
-            fetch('http://27.254.144.88:1337/api' + '/teams?populate=*')
+            fetch('http://27.254.144.88:1337/api' + '/teams?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id)
                 .then(response => response.json())
                 .then((resp) => {
                     const arr = []
@@ -307,17 +307,18 @@ export default {
             fetch('http://27.254.144.88:1337/api' + '/users/' + this.$store.state.userInfo.id + '?populate=*')
                 .then(response => response.json())
                 .then((resp) => {
-                    console.log(resp.role.name);
+                    console.log(resp);
                     this.dataProfile.first_name = resp.firstName
                     this.dataProfile.last_name = resp.lastName
                     this.dataProfile.email = resp.email
                     this.dataProfile.organization = resp.organization?.id
-                    this.dataProfile.role = resp.role?.id
-                    this.dataProfile.role_name = resp.role.name
+                    this.dataProfile.role = resp.org_role?.id
+                    this.dataProfile.role_name = resp.org_role?.orgRoleName
                     this.dataProfile.phone = resp.phone
                     this.dataProfile.team = resp.team?.id
                     this.dataProfile.address = resp.address
                     this.preview = resp.filePath
+                    console.log(this.dataProfile.team);
                 })
         },
         editProfile() {
@@ -343,7 +344,7 @@ export default {
                         "lastName": this.dataProfile.last_name,
                         "phone": this.dataProfile.phone,
                         "address": this.dataProfile.address,
-                        "role": this.dataProfile.role,
+                        "org_role": this.dataProfile.role,
                         "organization": this.dataProfile.organization,
                         "team": this.dataProfile.team
                     })

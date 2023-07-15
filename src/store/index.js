@@ -11,10 +11,10 @@ export default new Vuex.Store({
     is_login: false,
     drawer: false,
     token: '',
-    role: '',
-    userInfo: {
-
-    }
+    errLogin:false,
+    userInfo: {},
+    userDetail: {},
+    role: {}
   },
   getters: {
 
@@ -31,16 +31,22 @@ export default new Vuex.Store({
     setUser(state, data) {
       state.userInfo = data
     },
-    setToken(state, data) {
-      state.token = data
+    setUserDetail(state, data) {
+      state.userDetail = data
     },
     setRole(state, data) {
       state.role = data
+    },
+    setToken(state, data) {
+      state.token = data
+    },
+    setErr(state, data) {
+      state.errLogin = data
     }
   },
   actions: {
-    loginUser({ commit, state }, user) {
-      axios.post('http://27.254.144.88:1337/api' + '/auth/local?populate=*', {
+    loginUser({ commit }, user) {
+      axios.post('http://27.254.144.88:1337/api' + '/auth/local', {
         "identifier": user.email,
         "password": user.password
       }).then((resp) => {
@@ -49,40 +55,44 @@ export default new Vuex.Store({
             "blog_token", resp.data.jwt
           )
         }
-        fetch('http://27.254.144.88:1337/api' + '/users/' + resp.data.user.id + '?populate=*')
+        fetch('http://27.254.144.88:1337/api/users/' + resp.data.user.id + '?populate=*')
           .then(response => response.json())
-          .then((resp) => {
-            console.log(resp.role.name);
-            commit('setRole', resp.role.name)
+          .then((resp2) => {
+            fetch('http://27.254.144.88:1337/api/org-roles/'+resp2.org_role.id+'?populate=*')
+              .then(response => response.json())
+              .then((resp3) => {
+                setTimeout(() => {
+                  commit('setRole', resp3.data.attributes.org_permission.data.attributes)
+                }, 500)
+              })
+            setTimeout(() => {
+              commit('setUserDetail', resp2)
+            }, 500)
           })
         setTimeout(() => {
           commit('setUser', resp.data.user)
           commit('setToken', resp.data.jwt)
           commit('doLogin', true)
           localStorage.setItem("is_login", true)
-          if (state.role == 'Admin') {
-            router.push({
-              path: '/',
-            })
-          }
-          else {
-            router.push({
-              path: '/DashBoardEm',
-            })
-          }
-
+          router.push({
+            path: '/',
+          })
         }, 500)
-
-
-      }).finally(() => { 
-        setTimeout(()=>{
-           console.log(state.role)
-        },700)
-        })
+      }).catch((err)=>{
+        commit('setErr', err? true:false)
+      }).finally(() => {
+      })
     },
-    // logOut({commit}){
-    //   localStorage.clear
-    // }
+    rolePerrmission({commit},idRole){
+      fetch('http://27.254.144.88:1337/api/org-roles/'+idRole+'?populate=*')
+      .then(response => response.json())
+      .then((resp3) => {
+        console.log(resp3);
+        setTimeout(() => {
+          commit('setRole', resp3.data.attributes.org_permission.data.attributes)
+        }, 500)
+      })
+    }
   },
   modules: {
   },
