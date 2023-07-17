@@ -4,13 +4,13 @@
             <UserFilter @changeTab="onClickChild" @filterUser="getTeam"></UserFilter>
         </div>
         <div class="m-[10px]" v-if="this.checkTab">
-            <div v-if="$store.state.role.userView">
+            <div v-if="$store.state.role_perrmission.userView">
                 <MemberCard :team="team"></MemberCard>
             </div>
 
         </div>
         <div class="m-[10px]" v-else>
-            <div v-if="$store.state.role.companyView">
+            <div v-if="$store.state.role_perrmission.companyView">
                 <OrganizaCard></OrganizaCard>
             </div>
         </div>

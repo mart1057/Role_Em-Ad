@@ -27,7 +27,7 @@
             <div class="flex w-[180px] justify-between items-center  ">
                 <div>
                     <div class="mb-[10px]">
-                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">10</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">{{ dataTrue.length }}</div>
                         <div class="flex">
                             <div class="flex justify-center items-center mr-[4px]">
                                 <div
@@ -38,29 +38,9 @@
 
                             <div class="center con-avatars">
                                 <vs-avatar-group max="6">
-                                    <vs-avatar circle danger size="30">
+                                    <vs-avatar circle color="#0597E9" size="30" v-for="data in dataTrue">
                                         <template #text>
-                                            Fanny
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            Fanny
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#0597E9" size="30">
-                                        <template #text>
-                                            Fanny
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle danger size="30">
-                                        <template #text>
-                                            Fanny
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            Fanny
+                                            {{ data.firstName }}
                                         </template>
                                     </vs-avatar>
                                 </vs-avatar-group>
@@ -70,7 +50,7 @@
                     </div>
                     <hr>
                     <div class="mt-[10px]">
-                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">10</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">{{ dataFalse.length }}</div>
                         <div class="flex">
                             <div class="flex justify-center items-center mr-[4px]">
                                 <div
@@ -79,62 +59,11 @@
                             </div>
                             <div class="center con-avatars">
                                 <vs-avatar-group max="6">
-                                    <vs-avatar circle color="#0597E9" size="30">
+                                    <vs-avatar circle color="#0597E9" size="30" v-for="data in dataFalse">
                                         <template #text>
-                                            A
+                                            {{ data.firstName }}
                                         </template>
                                     </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            B
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#0597E9" size="30">
-                                        <template #text>
-                                            C
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle danger size="30">
-                                        <template #text>
-                                            D
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#0597E9" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-                                    <vs-avatar circle color="#FFB51E" size="30">
-                                        <template #text>
-                                            E
-                                        </template>
-                                    </vs-avatar>
-
                                 </vs-avatar-group>
                             </div>
                         </div>
@@ -155,9 +84,15 @@ export default {
     data() {
         return {
             data: [10, 5],
+            dataTrue:[],
+            dataFalse:[],
+            value: 0,
 
         };
 
+    },
+    mounted() {
+        this.getNumber()
     },
     computed: {
         options() {
@@ -196,6 +131,26 @@ export default {
             };
         },
     },
+    methods: {
+        getNumber() {
+            // api ยังไม่ส่งรูปมา
+            fetch('http://27.254.144.88:1337/api/users?filters[expStatus][$eq]=false')
+                .then(response => response.json())
+                .then((resp) => {
+                    this.dataFalse = resp
+                })
+            fetch('http://27.254.144.88:1337/api/users?filters[expStatus][$eq]=true')
+                .then(response => response.json())
+                .then((resp) => {
+                    console.log(resp);
+                    this.dataTrue = resp
+                }).then(() => {
+                    this.data = [this.dataFalse.length,this.dataTrue.length]
+                })
+
+            console.log(this.data);
+        },
+    }
 }
 
 </script>

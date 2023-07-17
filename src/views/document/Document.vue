@@ -7,13 +7,13 @@
 
                     <div class="flex">
                         <button class="btn-create text-[12px] text-[#6B7490] font-bold hover:bg-sky-100"
-                            @click="createDoc()">Create
+                            @click="$store.state.role_perrmission.documentCreate ? createDoc() : null">Create
                             Document</button>
                         <div>
                             <vs-tooltip bottom shadow not-hover not-arrow v-model="actionFilter">
                                 <div>
                                     <button class="btn-filter text-[12px] text-[#6B7490] font-bold hover:bg-sky-100"
-                                        @click="actionFilter = !actionFilter">Filter</button>
+                                        @click="getUsers(), actionFilter = !actionFilter">Filter</button>
                                 </div>
                                 <template #tooltip>
                                     <div>
@@ -22,6 +22,9 @@
                                                 <select class=" select-opt w-[130px] h-[30px] rounded-[6px]"
                                                     v-model="filterList.assigned">
                                                     <option disabled value="">Assigned...</option>
+                                                    <option value="">All</option>
+                                                    <option v-for="data in dataMember" :value="data.id">
+                                                        {{ data.name }}</option>
                                                     <!-- <option val="">Darft</option>
                                                     <option>Resive</option>
                                                     <option>Peding</option> -->
@@ -32,13 +35,9 @@
                                                 <select class=" select-opt w-[130px] h-[30px] rounded-[6px]"
                                                     v-model="filterList.project">
                                                     <option disabled value="">Project...</option>
+                                                    <!-- <option value="">All</option> -->
                                                     <option v-for="data in projects" :value="data.id">
                                                         {{ data.attributes.projectName }}</option>
-                                                    <!-- <option :value="1">Darft</option>
-                                                    <option :value="3">Resive</option>
-                                                    <option :value="2">Peding</option>
-                                                    <option :value="4">Approved</option>
-                                                    <option :value="5">Reject</option> -->
                                                 </select>
                                             </div>
                                         </div>
@@ -48,6 +47,7 @@
                                                     <select class=" select-opt w-[130px] h-[30px] rounded-[6px]"
                                                         v-model="filterList.tag">
                                                         <option disabled value=''>Tag...</option>
+                                                        <option value="">All</option>
                                                         <option v-for="(tag, i) in tags" :value="tag.id">{{
                                                             tag.attributes.tagName }}</option>
                                                     </select>
@@ -91,7 +91,7 @@
                                                     @click="clearfilter(), actionFilter = false">Clear</vs-button>
                                             </div>
                                             <div class="flex justify-end mt-[-20px] mb-[10px]">
-                                                <vs-button type="filled" @click="getDocList(), actionFilter = false">Save
+                                                <vs-button type="filled" @click="getDocList(filterSearch), actionFilter = false">Save
                                                     Filter</vs-button>
                                             </div>
                                         </div>
@@ -101,8 +101,8 @@
                         </div>
                     </div>
                     <div>
-                        <input type="search" class="input_br w-[230px] h-[38px] rounded-[6px]" v-model="filterList.text"
-                            placeholder="Search">
+                        <input type="search" class="input_br w-[230px] h-[38px] rounded-[6px]" @input="handleSearch"
+                            v-model="filterSearch" placeholder="Search">
                         <div class="flex hotfix">
                             <div class="mt-[-2px]"><md-icon>search</md-icon> </div>
                             <div class="border-l-2 h-[21px] border-[#6B7490] "></div>
@@ -148,10 +148,10 @@
                                     
                                 </vs-td> -->
                                     <vs-td>
-                                        <div class="flex">
+                                        <div class="flex cursor-pointer">
                                             <div class="flex justify-center items-center"><vs-checkbox :val="tr.id"
                                                     v-model="selected" /></div>
-                                            <div @click="fetchDetail(tr.id)"
+                                            <div @click="$store.state.role_perrmission.documentView ? fetchDetail(tr.id) : null"
                                                 class="flex justify-satrt items-center ml-[20px]  w-[100%]">{{
                                                     tr.attributes.docName
                                                 }}
@@ -167,12 +167,12 @@
                                             <div class="flex">
                                                 <div
                                                     class="h-[25px] mb-[5px] bg-[#6B7490] flex items-center justify-center rounded-[100px] p-[10px] text-[white]">
-                                                    {{ tr.attributes.tags.data[0].attributes.tagName }}</div>
+                                                    {{ tr.attributes.tags.data[0]?.attributes.tagName }}</div>
                                             </div>
                                             <div class="flex">
                                                 <div
                                                     class="h-[25px] mb-[5px] bg-[#6B7490] flex items-center justify-center rounded-[100px] p-[10px] text-[white]">
-                                                    {{ tr.attributes.tags.data[1].attributes.tagName }}</div>
+                                                    {{ tr.attributes.tags.data[1]?.attributes.tagName }}</div>
                                             </div>
                                             <div class="text-[#6B7490] text-[10px]">+ {{ tr.attributes.tags.data.length - 2
                                             }}
@@ -202,7 +202,7 @@
                                                         '#BCC7D6' : tr.attributes.status === 2 ? '#79ACF9' : tr.attributes.status == 3 ? '#FFB927' : tr.attributes.status === 4 ? '#369C7B' : tr.attributes.status === 5 ? 'red' : '#6B7490'
                                                 }">
                                                 {{ tr.attributes.status == 1 ?
-                                                    'Draft' : tr.attributes.status === 2 ? 'Pending [Serial] 2/3' :
+                                                    'Draft' : tr.attributes.status === 2 ? tr.attributes.sequentialOrder? 'Pending [Serial]':'Pending [Paralell]' :
                                                         tr.attributes.status ===
                                                             4 ? 'Approved' : tr.attributes.status === 5 ? 'Reject' : 'Revise' }}
                                             </div>
@@ -271,7 +271,7 @@
                                 </vs-tr>
                             </template>
                             <template #footer>
-                                <div @click="getDocList()" class="cursor-pointer" v-if="lengthPage != 0">
+                                <div @click="getDocList(this.filterSearch)" class="cursor-pointer" v-if="lengthPage != 0">
                                     <vs-pagination v-model="page" :length="lengthPage" />
                                 </div>
                             </template>
@@ -286,7 +286,7 @@
                 <div class="flex justify-end">
                     <div @click="closeDialog()" class="cursor-pointer"><md-icon>close</md-icon></div>
                 </div>
-                <div class="text-[12px] font-bold text-[#6B7490]">DITS Project</div>
+                <div class="text-[12px] font-bold text-[#6B7490]">{{ $route.query.name }}</div>
                 <div class="flex mb-[10px]">
                     <div class="flex justify-start items-center">
                         <div class="flex justify-start items-center">
@@ -369,12 +369,14 @@
                     <div class="ml-[30px]">
                         <div class="mt-[10px] mr-[10px]">
                             <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Document Name</div>
-                            <div><input class="w-[370px] h-[30px] rounded-[6px]" v-model="formDataDoc.doc_name" /></div>
+                            <div><input class="w-[370px] h-[30px] rounded-[6px]" v-model="formDataDoc.doc_name" readonly />
+                            </div>
                         </div>
                         <div class="mt-[10px] mr-[10px]">
                             <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Document Type</div>
                             <div>
-                                <select class=" select-opt w-[370px] h-[30px] rounded-[6px]" v-model="formDataDoc.doc_type">
+                                <select class=" select-opt w-[370px] h-[30px] rounded-[6px]" v-model="formDataDoc.doc_type"
+                                    @change="changeDocType(formDataDoc.doc_type)">
                                     <option disabled value="">Select...</option>
                                     <option v-for="(type, i) in doc_type" :value="type.id">{{
                                         type.attributes.documentTypeName
@@ -418,10 +420,10 @@
                                 <div class="flex">
                                     <template>
                                         <div class="center flex">
-                                            <vs-radio v-model="formDataDoc.seq_order" :val="true">
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="false">
                                                 <div class="text-[10px]">Parallel</div>
                                             </vs-radio>
-                                            <vs-radio v-model="formDataDoc.seq_order" :val="false">
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="true">
                                                 <div class="text-[10px]">Serial</div>
                                             </vs-radio>
                                         </div>
@@ -479,11 +481,7 @@
                                                     class="icon-deleteTag" style=" color:#ffffff;">close</md-icon></div>
                                         </div>
                                     </div>
-
-
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
@@ -516,7 +514,7 @@
                                 </div>
                                 <div class="w-[30%]">
                                     <div class="mb-[8px]" v-for="(file, i) in formDataDoc.allFile" :key="i">
-                                        <vs-checkbox v-model="formDataDoc.requiredFile">
+                                        <vs-checkbox v-model="file.requireFile">
                                             Required
                                         </vs-checkbox>
                                         <!-- <div class="flex items-center" >
@@ -566,7 +564,6 @@
                                     <div class="w-[70%] ">
                                         <div class="test w-[307px] h-[32px] mb-[10px] pl-[10px] pr-[10px] flex justify-between items-center"
                                             v-for="(file, i) in formDataDoc.allRelated" :key="i">
-
                                             <div>
                                                 <span class="text-[#3C7CFC] font-bold">{{ file.name }}</span>
                                                 <span class="text-[#3C7CFC] ml-[10px]">
@@ -576,9 +573,7 @@
                                             <div @click="removeFileRelated(i)" class="cursor-pointer">
                                                 <md-icon>close</md-icon>
                                             </div>
-
                                         </div>
-
                                     </div>
                                 </div>
                                 <vs-tooltip bottom shadow not-hover v-model="actionRelatedFile">
@@ -586,7 +581,6 @@
                                         <img class="w-[128px] h-[32px] cursor-pointer" :src="imgUpload"
                                             @click="actionRelatedFile = !actionRelatedFile">
                                     </div>
-
                                     <template #tooltip>
                                         <div class="m-[10px]">
                                             <div class="flex ">
@@ -616,19 +610,18 @@
                     <div>
                         <button
                             class="h-[38px]text-[center] rounded-[6px] bg-[#6B7490] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px] "
-                            @click="submitDarft()">
+                            @click=" is_edit ? $store.state.role_perrmission.documentEdit ? submitDarft() : null : submitDarft()">
                             Draft
                         </button>
                     </div>
                     <div>
                         <button
                             class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
-                            @click="saveOrEdit()">Create
+                            @click="  is_edit ? $store.state.role_perrmission.documentEdit ? saveOrEdit() : null : saveOrEdit()">Create
                             and start the workflow
                         </button>
                     </div>
                 </div>
-
             </b-modal>
 
             <!-- //////////////////////////////////////// Start Workflow ///////////////////////////////////////////////////// -->
@@ -637,11 +630,11 @@
                 <div class="flex justify-end">
                     <div @click="dailogStep2 = !dailogStep2" class="cursor-pointer"><md-icon>close</md-icon></div>
                 </div>
-                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">DITS Project</div>
+                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">{{ $route.query.name }}</div>
 
                 <div class="flex mb-[10px] justify-between">
                     <div class="flex">
-                        <div class="text-[18px] font-bold text-[black] mr-[10px]">IV110823_supplierBKK02.pdf</div>
+                        <div class="text-[18px] font-bold text-[black] mr-[10px]">{{ formDataDoc.doc_name }}</div>
                         <!-- <div class=" flex">
                             <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px]"
                                 :style="{
@@ -651,9 +644,17 @@
                                 {{ tr.status }}</div>
                         </div> -->
                         <div class="flex">
-                            <div
-                                class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
-                                Darft</div>
+                            <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]"
+                                :style="{
+                                    background: formDataDoc.status == 1 ?
+                                        '#BCC7D6' : formDataDoc.status === 2 ? '#79ACF9' : formDataDoc.status == 3 ? '#FFB927' : formDataDoc.status === 4 ? '#369C7B' : formDataDoc.status === 5 ? 'red' : '#6B7490'
+                                }">
+                                {{ formDataDoc.status == 1 ?
+                                    'Draft' : formDataDoc.status === 2 ? formDataDoc.seq_order ? 'Pending [Serial] ' + '' + test() +
+                                '/' + formDataDoc.addMember.length : 'Pending [Parallel] ' + '' + test() +
+                                '/' + formDataDoc.addMember.length :
+                                formDataDoc.status === 4 ? 'Approved' : formDataDoc.status === 5 ? 'Reject' : 'Revise' }}
+                            </div>
                         </div>
                     </div>
                     <div class="flex">
@@ -680,19 +681,20 @@
                                 <div class="flex justify-between">
                                     <div>
                                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Created Date</div>
-                                        <div class="text-[12px]">22 Dec 2023 by</div>
+                                        <div class="text-[12px]">{{ covertDay(formDataDoc.createAt) }} by</div>
                                     </div>
                                     <div class="flex items-center justify-center ml-[8px]">
                                         <vs-avatar circle>
                                             <template #text>
-                                                Test
+                                                {{ formDataDoc.createBy.attributes.firstName }} {{
+                                                    formDataDoc.createBy.attributes.lastName }}
                                             </template>
                                         </vs-avatar>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Due Date</div>
-                                    <div class="text-[12px]">31 Dec 2023</div>
+                                    <div class="text-[12px]">{{ covertDay(formDataDoc.date) }}</div>
                                 </div>
                             </div>
 
@@ -711,10 +713,10 @@
                                 <div class="flex">
                                     <template>
                                         <div class="center flex">
-                                            <vs-radio v-model="formDataDoc.seq_order" val="true" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="false" disabled>
                                                 <div class="text-[10px]">Parallel</div>
                                             </vs-radio>
-                                            <vs-radio v-model="formDataDoc.seq_order" val="false" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="true" disabled>
                                                 <div class="text-[10px]">Serial</div>
                                             </vs-radio>
                                         </div>
@@ -741,28 +743,50 @@
                             <div class="flex">
                                 <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
                                     :key="i" class="flex">
-                                    <div class="flex justify-center items-center">
-                                        <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
-                                            badge-position="bottom-right" :color="data.color">
+                                    <div v-if="data.revise == true">
+                                        <vs-avatar circle badge-color="#4FBD9E" badge-position="bottom-right"
+                                            :color="data.color">
                                             <template #text>
                                                 {{ data.name }}
                                             </template>
-
-                                            <template #badge v-if="data.status != null">
+                                            <template #badge>
                                                 <div>
-                                                    <div v-if="data.status == true">
-                                                        <img src="../../assets/image/vertify.png"
-                                                            class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
-                                                    </div>
-                                                    <div v-else
+                                                    <div
                                                         class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
                                                         !
                                                     </div>
-
                                                 </div>
                                             </template>
-
                                         </vs-avatar>
+                                    </div>
+                                    <div v-else>
+                                        <div v-if="data.approved === true" class="flex justify-center items-center">
+                                            <vs-avatar circle :badge-color="data.approved === true ? '#4FBD9E' : ''"
+                                                badge-position="bottom-right" :color="data.color">
+                                                <template #text>
+                                                    {{ data.name }}
+                                                </template>
+                                                <template #badge v-if="data.approved != null">
+                                                    <div>
+                                                        <div v-if="data.approved == true">
+                                                            <img src="../../assets/image/vertify.png"
+                                                                class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                        </div>
+                                                        <!-- <div v-else
+                                                        class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                        !
+                                                    </div> -->
+                                                    </div>
+                                                </template>
+                                            </vs-avatar>
+                                        </div>
+                                        <div v-else class="flex justify-center items-center">
+                                            <vs-avatar circle :color="data.color">
+                                                <template #text>
+                                                    {{ data.name }}
+                                                </template>
+                                            </vs-avatar>
+                                        </div>
                                     </div>
                                     <div class="flex justify-center items-center"
                                         v-if="i != formDataDoc.addMember.length - 1">
@@ -770,7 +794,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="mt-[10px] mr-[10px]">
                             <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Tag</div>
@@ -800,18 +823,34 @@
                                     <div>
                                         <div class="test w-[307px] h-[32px] mb-[10px] pl-[10px] pr-[10px] flex justify-between items-center"
                                             v-for="(file, i) in formDataDoc.allFile" :key="i">
-
                                             <div>
                                                 <span class="text-[#3C7CFC] font-bold">{{ file.name }}</span>
                                                 <span class="text-[#3C7CFC] ml-[10px]">
                                                     {{ file.size }} MB
                                                 </span>
                                             </div>
-                                            <div>
-                                                <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' :
-                                                    'edit'
-                                                }}</md-icon>
-                                                <md-icon style=" color:#79ACF9;">download</md-icon>
+                                            <div class="flex">
+                                                <div v-if="formDataDoc.seq_order">
+                                                    <div class="cursor-pointer" v-if="file.signature == true"
+                                                        @click="checkRoleSingnal(file.path, file.id, file.idApprovalResponsibilities)">
+                                                        <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ?
+                                                            'done' :
+                                                            'edit'
+                                                        }}</md-icon>
+                                                    </div>
+                                                </div>
+                                                <div v-else>
+                                                    <div class="cursor-pointer" v-if="file.signature == true"
+                                                        @click="openPupupPDF(file.path, file.id, file.idApprovalResponsibilities)">
+                                                        <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ?
+                                                            'done' :
+                                                            'edit'
+                                                        }}</md-icon>
+                                                    </div>
+                                                </div>
+                                                <div class="cursor-pointer" @click="downloadPDF(file.path, file.name)">
+                                                    <md-icon style=" color:#79ACF9;">download </md-icon>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -859,13 +898,18 @@
                                 </div>
 
                                 <div class="flex mt-[-5px] ml-[-5px] " v-for="(file, i) in formDataDoc.allFile" :key="i">
-                                    <vs-button border color="#369C7B" :active="file.type == true" @click="file.type = true">
+                                    <vs-button border color="#369C7B" :active="file.checkSignal == true"
+                                        @click="file.checkSignal = true">
                                         Approve
                                     </vs-button>
-                                    <vs-button border color="#F8AB0D" :active="file.type == false"
-                                        @click="file.type = false">
+                                    <vs-button border color="#F8AB0D" :active="file.revise == true"
+                                        @click="file.revise = !file.revise, changeRvise(file.revise, file.idApprovalResponsibilities, file.id)">
                                         Revise
                                     </vs-button>
+                                    <!-- <vs-button border color="#F8AB0D" :active="file.checkSignal == false"
+                                        @click="file.checkSignal = false">
+                                        Revise
+                                    </vs-button> -->
                                     <div class="flex items-center justify-center mt-[-3px] cursor-pointer"
                                         v-if="file.type == false" @click="OpenNote = !OpenNote"><md-icon
                                             style=" color:#F8AB0D;">maps_ugc</md-icon></div>
@@ -921,7 +965,7 @@
                     <div>
                         <button
                             class="h-[38px]text-[center] rounded-[6px] bg-[#3C7CFC] text-[white] text-[12px] pl-[12px] pb-[6px] pr-[12px] pt-[6px]"
-                            @click="startFlow">Confirm
+                            @click="startFlow()">Confirm
                         </button>
                     </div>
                 </div>
@@ -933,11 +977,11 @@
                 <div class="flex justify-end">
                     <div @click="dailogStep3 = !dailogStep3" class="cursor-pointer"><md-icon>close</md-icon></div>
                 </div>
-                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">DITS Project</div>
+                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">{{ $route.query.name }}</div>
 
                 <div class="flex mb-[10px] justify-between">
                     <div class="flex">
-                        <div class="text-[18px] font-bold text-[black] mr-[10px]">IV110823_supplierBKK02.pdf</div>
+                        <div class="text-[18px] font-bold text-[black] mr-[10px]">{{ formDataDoc.doc_name }}</div>
                         <!-- <div class=" flex">
                             <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px]"
                                 :style="{
@@ -947,9 +991,16 @@
                                 {{ tr.status }}</div>
                         </div> -->
                         <div class="flex">
-                            <div
-                                class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]">
-                                Darft</div>
+                            <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]"
+                                :style="{
+                                    background: formDataDoc.status == 1 ?
+                                        '#BCC7D6' : formDataDoc.status === 2 ? '#79ACF9' : formDataDoc.status == 3 ? '#FFB927' : formDataDoc.status === 4 ? '#369C7B' : formDataDoc.status === 5 ? 'red' : '#6B7490'
+                                }">
+                                {{ formDataDoc.status == 1 ?
+                                    'Draft' : formDataDoc.status === 2 ? 'Pending [Serial]' + ' ' + test() +
+                                        '/' + formDataDoc.addMember.length :
+                                        formDataDoc.status === 4 ? 'Approved' : formDataDoc.status === 5 ? 'Reject' : 'Revise' }}
+                            </div>
                         </div>
                     </div>
                     <div class="flex">
@@ -978,19 +1029,20 @@
                                 <div class="flex justify-between">
                                     <div>
                                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Created Date</div>
-                                        <div class="text-[12px]">22 Dec 2023 by</div>
+                                        <div class="text-[12px]">{{ covertDay(formDataDoc.createAt) }} by</div>
                                     </div>
                                     <div class="flex items-center justify-center ml-[8px]">
                                         <vs-avatar circle>
                                             <template #text>
-                                                Test
+                                                {{ formDataDoc.createBy.attributes.firstName }} {{
+                                                    formDataDoc.createBy.attributes.lastName }}
                                             </template>
                                         </vs-avatar>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Due Date</div>
-                                    <div class="text-[12px]">31 Dec 2023</div>
+                                    <div class="text-[12px]">{{ covertDay(formDataDoc.date) }}</div>
                                 </div>
                             </div>
 
@@ -1009,10 +1061,10 @@
                                 <div class="flex">
                                     <template>
                                         <div class="center flex">
-                                            <vs-radio v-model="formDataDoc.seq_order" val="true" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="false" disabled>
                                                 <div class="text-[10px]">Parallel</div>
                                             </vs-radio>
-                                            <vs-radio v-model="formDataDoc.seq_order" val="false" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="true" disabled>
                                                 <div class="text-[10px]">Serial</div>
                                             </vs-radio>
                                         </div>
@@ -1039,28 +1091,50 @@
                             <div class="flex">
                                 <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
                                     :key="i" class="flex">
-                                    <div class="flex justify-center items-center">
-                                        <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
-                                            badge-position="bottom-right" :color="data.color">
+                                    <div v-if="data.revise == true">
+                                        <vs-avatar circle badge-color="#4FBD9E" badge-position="bottom-right"
+                                            :color="data.color">
                                             <template #text>
                                                 {{ data.name }}
                                             </template>
-
-                                            <template #badge v-if="data.status != null">
+                                            <template #badge>
                                                 <div>
-                                                    <div v-if="data.status == true">
-                                                        <img src="../../assets/image/vertify.png"
-                                                            class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
-                                                    </div>
-                                                    <div v-else
+                                                    <div
                                                         class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
                                                         !
                                                     </div>
-
                                                 </div>
                                             </template>
-
                                         </vs-avatar>
+                                    </div>
+                                    <div v-else>
+                                        <div v-if="data.approved === true" class="flex justify-center items-center">
+                                            <vs-avatar circle :badge-color="data.approved === true ? '#4FBD9E' : ''"
+                                                badge-position="bottom-right" :color="data.color">
+                                                <template #text>
+                                                    {{ data.name }}
+                                                </template>
+                                                <template #badge v-if="data.approved != null">
+                                                    <div>
+                                                        <div v-if="data.approved == true">
+                                                            <img src="../../assets/image/vertify.png"
+                                                                class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                        </div>
+                                                        <!-- <div v-else
+                                                        class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
+                                                        !
+                                                    </div> -->
+                                                    </div>
+                                                </template>
+                                            </vs-avatar>
+                                        </div>
+                                        <div v-else class="flex justify-center items-center">
+                                            <vs-avatar circle :color="data.color">
+                                                <template #text>
+                                                    {{ data.name }}
+                                                </template>
+                                            </vs-avatar>
+                                        </div>
                                     </div>
                                     <div class="flex justify-center items-center"
                                         v-if="i != formDataDoc.addMember.length - 1">
@@ -1068,7 +1142,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="mt-[10px] mr-[10px]">
                             <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Tag</div>
@@ -1105,64 +1178,68 @@
                                                     {{ file.size }} MB
                                                 </span>
                                             </div>
-                                            <div>
-                                                <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' :
-                                                    'edit'
-                                                }}</md-icon>
-                                                <md-icon style=" color:#79ACF9;">download</md-icon>
+                                            <div class="flex">
+                                                <div v-if="!file.revise">
+                                                    <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' :
+                                                        'edit'
+                                                    }}</md-icon>
+                                                </div>
+                                                <div class="cursor-pointer" @click="downloadPDF(file.path, file.name)">
+                                                    <md-icon style=" color:#79ACF9;">download</md-icon>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
                                         <div class="flex items-center" v-for="(file, i) in formDataDoc.allFile" :key="i">
                                             <div class="flex  ml-[12px] mb-[10px] w-[65px] ">
-                                                <div class="rounded-[12px] text-white pb-[8px] pt-[8px] pl-[12px] pr-[12px] text-[10px] flex justify-center items-center"
-                                                    :style="{ background: file.type == true ? '#369C7B' : '#F8AB0D' }">{{
-                                                        file.type
-                                                        == true ? 'Approve' : 'Revise' }}
+                                                <div class="h-[30px] rounded-[12px] text-white pb-[8px] pt-[8px] pl-[12px] pr-[12px] text-[10px] flex justify-center items-center"
+                                                    :style="{ background: file.revise == true ? '#F8AB0D' : '' }">{{
+                                                        file.revise == true ? 'Revise' : '' }}
                                                 </div>
-                                                <div
+                                                <div v-if="file.revise == true">
+                                                    <vs-tooltip bottom shadow not-hover v-model="file.popup">
+                                                        <div class="w-[128px] flex justify-center item-start">
+                                                            <img class="w-[128px] h-[32px]  ml-[30px] mr-[6px] cursor-pointer"
+                                                                :src="reUpload" @click="toggleTooltip(file)">
+                                                        </div>
+                                                        <template #tooltip>
+                                                            <div class="m-[10px]">
+                                                                <div class="flex ">
+                                                                    <input type="file" ref="test" id="upload" hidden
+                                                                        @change="reUploadFile($event, file.revise, file.idApprovalResponsibilities, file.id)" /><label
+                                                                        class="flex cursor-pointer" for="upload">
+                                                                        <div><md-icon>upload</md-icon></div>
+                                                                        <div
+                                                                            classfil="flex items-center justify-center ml-[10px]">
+                                                                            Upload From Driver
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="flex mt-[10px] cursor-pointer">
+                                                                    <div><md-icon>document_scanner</md-icon></div>
+                                                                    <div
+                                                                        class="flex items-center justify-center  ml-[10px]">
+                                                                        Upload
+                                                                        With Scan </div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </vs-tooltip>
+                                                </div>
+                                                <!-- <div
                                                     class="flex items-center justify-center cursor-pointer w-[30px] h-[30px] mr-[10px]">
-                                                    <md-icon style=" color:#F8AB0D;" v-if="file.type == false"
+                                                    <md-icon style=" color:#F8AB0D;" v-if="file.revise== true"
                                                         @click="OpenNote = !OpenNote">maps_ugc</md-icon>
-                                                </div>
+                                                </div> -->
                                             </div>
 
                                             <!-- <div class="w-[128px] ">
                                             <img class="w-[128px] h-[32px]  mt-[-8px] ml-[13px] cursor-pointer"
                                                 :src="reUpload" @click="actionUploadFile = !actionUploadFile">
                                         </div> -->
-                                            <div>
-                                                <vs-tooltip bottom shadow not-hover v-model="actionReUploadFile">
-                                                    <div class="w-[128px]">
-                                                        <img class="w-[128px] h-[32px] mt-[-8px] ml-[12px] mr-[6px] cursor-pointer"
-                                                            :src="reUpload"
-                                                            @click="actionReUploadFile = !actionReUploadFile">
-                                                    </div>
-                                                    <template #tooltip>
-                                                        <div class="m-[10px]">
-                                                            <div class="flex ">
-                                                                <input type="file" ref="aaa" id="upload" hidden
-                                                                    @change="reUploadFile($event.target.files, file)" /><label
-                                                                    class="flex cursor-pointer" for="upload">
-                                                                    <div><md-icon>upload</md-icon></div>
-                                                                    <div
-                                                                        classfil="flex items-center justify-center ml-[10px]">
-                                                                        Upload From Driver
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                            <div class="flex mt-[10px] cursor-pointer">
-                                                                <div><md-icon>document_scanner</md-icon></div>
-                                                                <div class="flex items-center justify-center  ml-[10px]">
-                                                                    Upload
-                                                                    With Scan </div>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-                                                </vs-tooltip>
-                                            </div>
-                                            <div class="w-[128px]">
+
+                                            <div class="w-[128px] ml-[120px]" v-if="file.revise == true">
                                                 <img class="w-[24px] h-[24px]  mt-[-8px] ml-[13px] cursor-pointer"
                                                     :src="deleteFile" @click="removeFile(i)">
                                             </div>
@@ -1329,7 +1406,7 @@
                             <div class="text-[#2D3349] font-bold text-[12px] w-[20%] mb-[8px]">Signature</div>
                             <div>
                                 <div class="mb-[10px]" v-for="(file, i) in formDataDoc.allFile" :key="i">
-                                    <vs-checkbox v-model="file.requiredFile">
+                                    <vs-checkbox v-model="formDataDoc.allFile.required">
                                         Required
                                     </vs-checkbox>
                                 </div>
@@ -1379,7 +1456,7 @@
                 </div>
                 <div>
                     <div class="text-[16px] font-bold text-[#2D3349]">Note to members</div>
-                    <div class="w-[100%] h-[97px] border rounded-[6px] mt-[8px] pl-[8px] pr-[8px]">Test</div>
+                    <input class="w-[100%] h-[97px] border rounded-[6px] mt-[8px] pl-[8px] pr-[8px]" v-model="formDataDoc.noteSpecial" />
                 </div>
                 <template #modal-footer>
                     <div class="w-100 flex justify-between">
@@ -1403,11 +1480,11 @@
                 <div class="flex justify-end">
                     <div @click="dialogSuccess = !dialogSuccess" class="cursor-pointer"><md-icon>close</md-icon></div>
                 </div>
-                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">DITS Project</div>
+                <div class="text-[12px] font-bold text-[#6B7490] mb-[10px]">{{ $route.query.name }}</div>
 
                 <div class="flex mb-[10px] justify-between">
                     <div class="flex">
-                        <div class="text-[18px] font-bold text-[black] mr-[10px]">IV110823_supplierBKK02.pdf</div>
+                        <div class="text-[18px] font-bold text-[black] mr-[10px]">{{ formDataDoc.doc_name }}f</div>
                         <!-- <div class=" flex">
                             <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px]"
                                 :style="{
@@ -1417,9 +1494,16 @@
                                 {{ tr.status }}</div>
                         </div> -->
                         <div class="flex">
-                            <div
-                                class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#FF5300] mr-[10px]">
-                                Reject</div>
+                            <div class="text-[white] h-[25px] flex justify-center items-center rounded-[100px] p-[14px] bg-[#BCC7D6] mr-[10px]"
+                                :style="{
+                                    background: formDataDoc.status == 1 ?
+                                        '#BCC7D6' : formDataDoc.status === 2 ? '#79ACF9' : formDataDoc.status == 3 ? '#FFB927' : formDataDoc.status === 4 ? '#369C7B' : formDataDoc.status === 5 ? 'red' : '#6B7490'
+                                }">
+                                {{ formDataDoc.status == 1 ?
+                                    'Draft' : formDataDoc.status === 2 ? 'Pending [Serial] 2/3' :
+                                        formDataDoc.status ===
+                                            4 ? 'Approved' : formDataDoc.status === 5 ? 'Reject' : 'Revise' }}
+                            </div>
                         </div>
                     </div>
                     <div class="flex">
@@ -1448,19 +1532,20 @@
                                 <div class="flex justify-between">
                                     <div>
                                         <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Created Date</div>
-                                        <div class="text-[12px]">22 Dec 2023 by</div>
+                                        <div class="text-[12px]">{{ covertDay(formDataDoc.createAt) }} by</div>
                                     </div>
                                     <div class="flex items-center justify-center ml-[8px]">
                                         <vs-avatar circle>
                                             <template #text>
-                                                Test
+                                                {{ formDataDoc.createBy.attributes.firstName }} {{
+                                                    formDataDoc.createBy.attributes.lastName }}
                                             </template>
                                         </vs-avatar>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Due Date</div>
-                                    <div class="text-[12px]">31 Dec 2023</div>
+                                    <div class="text-[12px]">{{ covertDay(formDataDoc.date) }}</div>
                                 </div>
                             </div>
 
@@ -1479,10 +1564,10 @@
                                 <div class="flex">
                                     <template>
                                         <div class="center flex">
-                                            <vs-radio v-model="formDataDoc.seq_order" val="true" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="false" disabled>
                                                 <div class="text-[10px]">Parallel</div>
                                             </vs-radio>
-                                            <vs-radio v-model="formDataDoc.seq_order" val="false" disabled>
+                                            <vs-radio v-model="formDataDoc.seq_order" :val="true" disabled>
                                                 <div class="text-[10px]">Serial</div>
                                             </vs-radio>
                                         </div>
@@ -1509,34 +1594,42 @@
                             <div class="flex">
                                 <div v-if="formDataDoc.addMember.length != 0" v-for="(data, i) in formDataDoc.addMember "
                                     :key="i" class="flex">
-                                    <div class="flex justify-center items-center">
-                                        <vs-avatar circle :badge-color="data.status === true ? '#4FBD9E' : '#FFCB14'"
+                                    <div v-if="data.approved === true" class="flex justify-center items-center">
+
+                                        <vs-avatar circle :badge-color="data.approved === true ? '#4FBD9E' : ''"
                                             badge-position="bottom-right" :color="data.color">
                                             <template #text>
                                                 {{ data.name }}
                                             </template>
-
-                                            <template #badge v-if="data.status != null">
+                                            <template #badge v-if="data.approved != null">
                                                 <div>
-                                                    <div v-if="data.status == true">
+                                                    <div v-if="data.approved == true">
                                                         <img src="../../assets/image/vertify.png"
                                                             class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
                                                     </div>
-                                                    <div v-else
+                                                    <!-- <div v-else
                                                         class="flex justify-center items-center w-[15px] h-[15px] cursor-pointer">
                                                         !
-                                                    </div>
-
+                                                    </div> -->
                                                 </div>
                                             </template>
+                                        </vs-avatar>
 
+                                    </div>
+                                    <div v-else class="flex justify-center items-center">
+                                        <vs-avatar circle :color="data.color">
+                                            <template #text>
+                                                {{ data.name }}
+                                            </template>
                                         </vs-avatar>
                                     </div>
-                                    <div class="flex justify-center items-center"><md-icon
-                                            style=" color:#3C7CFC;">arrow_right_alt</md-icon></div>
+
+                                    <div class="flex justify-center items-center"
+                                        v-if="i != formDataDoc.addMember.length - 1">
+                                        <md-icon style=" color:#3C7CFC;">arrow_right_alt</md-icon>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="mt-[10px] mr-[10px]">
                             <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Tag</div>
@@ -1574,21 +1667,23 @@
                                                 </span>
                                             </div>
                                             <div>
-                                                <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' :
+                                                <!-- <md-icon style=" color:#369C7B;">{{ file.checkSignal == true ? 'done' :
                                                     'edit'
-                                                }}</md-icon>
-                                                <md-icon style=" color:#79ACF9;">download</md-icon>
+                                                }}</md-icon> -->
+                                                <div class="cursor-pointer" @click="downloadPDF(file.path, file.name)">
+                                                    <md-icon style=" color:#79ACF9;">download</md-icon>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
                                         <div class="flex items-center" v-for="(file, i) in formDataDoc.allFile" :key="i">
                                             <div class="flex  ml-[12px] mb-[10px] w-[65px] ">
-                                                <div class="rounded-[12px] text-white pb-[8px] pt-[8px] pl-[12px] pr-[12px] text-[10px] flex justify-center items-center"
+                                                <!-- <div class="rounded-[12px] text-white pb-[8px] pt-[8px] pl-[12px] pr-[12px] text-[10px] flex justify-center items-center"
                                                     :style="{ background: file.type == true ? '#369C7B' : '#F8AB0D' }">{{
                                                         file.type
                                                         == true ? 'Approve' : 'Revise' }}
-                                                </div>
+                                                </div> -->
                                                 <div
                                                     class="flex items-center justify-center cursor-pointer w-[30px] h-[30px]">
                                                     <md-icon style=" color:#F8AB0D;" v-if="file.type == false"
@@ -1650,7 +1745,12 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <div v-if="formDataDoc.status === 5">
+                                    <div class="mt-[20px]">
+                                        <div class="mb-[8px] text-[#2D3349] font-bold text-[12px]">Note to members</div>
+                                        <input class="w-[100%] h-[97px] border rounded-[6px] mt-[8px] pl-[8px] pr-[8px] text-[#2D3349] text-[12px]" readonly v-model="formDataDoc.noteSpecial" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-[10px] flex ml-[30px]">
@@ -1672,7 +1772,10 @@
                 </div>
             </b-modal>
         </div>
-
+        <div v-if="openPDF">
+            <WebViewer :initialDoc="pathPDF" :idFile="idFile" :open="true" :getFiles="getFiles"
+                :idApprovalResponsibilities="idApprovalResponsibilities" />
+        </div>
         <!-- /////////////////////// createMainProject ///////////////// -->
         <CreateProject :openPopup="$route.query.create" />
 
@@ -1692,7 +1795,7 @@
                             <div class="flex mr-[30px] hover:bg-sky-100 cursor-pointer">
                                 <div class="flex justify-center items-center"><md-icon
                                         style=" color:#FF5300;">delete</md-icon></div>
-                                <div @click="deleteDoc()"
+                                <div @click=" $store.state.role_perrmission.documentDelete ? deleteDoc() : null"
                                     class="flex justify-center items-center  font-medium ml-[10px] mt-[3px] text-[#FF5300]">
                                     Delete</div>
                                 <div class="border-l-2 border-[#C4C7D3] ml-[20px]"></div>
@@ -1716,16 +1819,23 @@ import deleteFile from '@/assets/image/deleteFile.png';
 import imgUpload from '@/assets/image/test-upload.png';
 import ImgClose from '@/assets/image/close.png';
 import reUpload from '@/assets/image/re-Upload.png';
+// import Select2 from 'v-select2-component';
 import CreateProject from '@/views/document/CreateProject.vue'
+import WebViewer from './WebViewer.vue';
 import axios from 'axios'
+// import jsPDF from "jspdf";
 
 export default {
-    components: { CreateProject },
+    components: {  CreateProject, WebViewer },
     data() {
         return {
+            timer: null,
+            reFile: null,
+            checkRevise: false,
             page: 1,
             max: 10,
             lengthPage: '',
+            nextNumbering: '',
             myValue: '',
             myOptions: [{ id: 1, text: '55' }, { id: 2, text: '5588' }],// or [{id: key, text: value}, {id: key, text: value}]
             selectAll: false,
@@ -1743,6 +1853,9 @@ export default {
             OpenNote: false,
             note: '',
             tag: '',
+            pathPDF: '',
+            idFile: '',
+            idApprovalResponsibilities: '',
             is_edit: false,
             hideRevise: true,
             actionAddMember: false,
@@ -1750,6 +1863,9 @@ export default {
             actionReUploadFile: false,
             actionFilter: false,
             actionRelatedFile: false,
+            checkApprove: null,
+            switchStates: [],
+            checkViewPermission: null,
             checkFile: [],
             dataMember: [
                 // { id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: true },
@@ -1765,14 +1881,17 @@ export default {
             dailogRevis: false,
             dialogSuccess: false,
             dailogReject: false,
+            openPDF: false,
             formDataDoc: {
                 id: '',
                 doc_name: '',
                 doc_type: '',
                 date: '',
+                noteSpecial:'',
                 note: '',
+                doc_folder:'',
                 status: '',
-                seq_order: null,
+                seq_order: false,
                 after_approval: false,
                 tagArr: [],
                 allFile: [],
@@ -1780,6 +1899,7 @@ export default {
                 requiredFile: false,
                 addMember: [],
                 favoriteDoc: false,
+                createBy: {}
             },
             filterList: {
                 tag: '',
@@ -1788,26 +1908,7 @@ export default {
                 assigned: '',
                 favorite: false,
             },
-            DocList: [
-                {
-                    id: 1,
-                    name: "IV110823_supplierBKK01.pdf",
-                    type: '',
-                    note: '',
-                    allFile: [],
-                    allRelated: [],
-                    seq_order: null,
-                    requiredFile: false,
-                    after_approval: false,
-                    project: "DITS Project",
-                    tag: [{ name: 'Suppiler_A' }, { name: 'Invoice' }, { name: 'Suppiler_B' },],
-                    create: "8/01/2023 12:45",
-                    due_date: "17/02/2023 12:45",
-                    status: "Draft",
-                    member: [{ id: 1, name: 'Chatchapon Boonpan', color: '#FFB51E', img: 'https://en.pimg.jp/047/504/290/1/47504290.jpg', status: true }, { id: 2, name: 'Sasithron Maksai', color: '#79ACF9', img: '', status: true }, { id: 3, name: 'Nara Komsan', color: '#369C7B', img: '', status: true }],
-                    action: false
-                },
-            ],
+            filterSearch: '',
             items: [],
             tags: [],
             doc_type: [],
@@ -1816,18 +1917,26 @@ export default {
         }
     },
     mounted() {
-        this.getDocList()
-        this.fetchTag()
-        this.fetchDocType()
+        this.filterList.project = this.$route.query.project
         this.getUsers()
+        this.getDocList(this.filterSearch)
+        this.fetchTag()
+        this.getPorjectDetail()
+        this.fetchDocType()
+
         this.getProject()
         this.createMainProject = this.$route.query.create
-        console.log(this.createMainProject);
     },
     methods: {
-        myChangeEvent(val) {
+        toggleTooltip(file) {
+            // console.log(file);
+            file.popup = !file.popup;
         },
-        mySelectEvent({ id, text }) {
+        openPupupPDF(path, idFile, idApprovalResponsibilities) {
+            this.idFile = idFile
+            this.pathPDF = path
+            this.openPDF = true
+            this.idApprovalResponsibilities = idApprovalResponsibilities
         },
         onEnter() {
             this.msg = this.tag;
@@ -1848,7 +1957,7 @@ export default {
 
             });
             setTimeout(() => {
-                this.getDocList()
+                this.getDocList(this.filterSearch)
             }, 500);
 
             this.selected = []
@@ -1861,6 +1970,7 @@ export default {
                 name: member.name,
                 img: member.img,
             })
+            // console.log(this.formDataDoc.addMember)
             this.actionAddMember = false
             this.dataMember = this.dataMember.filter((m) => {
                 return m.id != member.id
@@ -1869,8 +1979,6 @@ export default {
         },
         uploadFile() {
             this.file = this.$refs.file.files[0];
-            // console.log(this.$refs.file.files[0]);
-            // console.log(this.file.type);
             let formData = new FormData();
             formData.append('files', this.file);
             axios.post('http://27.254.144.88:1337/api' + '/upload',
@@ -1883,6 +1991,9 @@ export default {
             ).then((resp) => {
                 this.formDataDoc.allFile.push({
                     id: this.formDataDoc.allFile.length,
+                    required: true,
+                    popup: false,
+                    requireFile:false,
                     name: resp.data[0].name,
                     size: resp.data[0].size,
                     type: resp.data[0].mime,
@@ -1894,67 +2005,103 @@ export default {
                     console.log('FAILURE!!');
                 });
         },
-        reUploadFile(file, oldFile) {
-            this.reFile.name = file[0].name;
-            this.reFile.size = file[0].size
-            this.reFile.id = oldFile.id
-            this.reFile.type = oldFile.type
-            this.reFile.checkSignal = oldFile.checkSignal
-            this.formDataDoc.allFile.fill(this.reFile, oldFile.id, 2)
-            // console.log(this.reFile);
-            // this.formDataDoc.allFile.push({
-            //     name: this.file.name,
-            //     size: this.file.size,
-            //     type: null, //true คือ Approve false คือ Revise all
-            //     checkSignal: false
+        reUploadFile(event, data, id, idFile,) {
+            this.reFile = event.target.files[0];
+            // console.log(id)
+            // axios.put('http://27.254.144.88:1337/api' + '/approval-responsibilities/' + id, {
+            //     "data": {
+            //         "revise": false,
+            //     }
             // })
+            // axios.put('http://27.254.144.88:1337/api' + '/document-files/' + idFile, {
+            //     "data": {
+            //         "revise": false,
+            //     }
+            // })
+            // axios.put('http://27.254.144.88:1337/api' + '/documents/' +this.formDataDoc.id, {
+            //     "data": {
+            //         "status": 2,
+            //     }
+            // })
+            let formData = new FormData();
+            formData.append('files', this.reFile);
+            axios.post('http://27.254.144.88:1337/api' + '/upload',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            ).then((resp) => {
+                console.log(resp.data[0].url)
+                axios.put('http://27.254.144.88:1337/api' + '/document-files/' + idFile, {
+                    "data": {
+                        "fileName": resp.data[0].name,
+                        "fileSize": resp.data[0].size,
+                        "filePath": 'http://27.254.144.88:1337' + resp.data[0].url,
+                        "revise": false,
+                    }
+                })
+                fetch('http://27.254.144.88:1337/api' + '/approval-responsibilities?populate=*&filters[document_file][id][$eq]=' + idFile)
+                    .then(response => response.json())
+                    .then((resp) => {
+                        resp.data.forEach((data) => {
+                            axios.put('http://27.254.144.88:1337/api' + '/approval-responsibilities/' + data.id, {
+                                "data": {
+                                    "revise": false,
+                                    "approved": false
+                                }
+                            })
+                        })
+                    })
+            }).catch(function () {
+                console.log('FAILURE!!');
+            })
+                .finally(() => {
+                    this.getFiles()
+                })
 
         },
         uploadFileRelated() {
             this.fileRelated = this.$refs.fileaa.files[0];
             this.formDataDoc.allRelated.push(this.fileRelated)
         },
-        submitDraft() {
-            this.DocList.push({
-                id: 1,
-                name: this.formDataDoc.doc_name,
-                type: this.formDataDoc.doc_type,
-                note: this.formDataDoc.note,
-                allFile: this.formDataDoc.allFile,
-                allRelated: this.formDataDoc.allRelated,
-                seq_order: this.formDataDoc.seq_order,
-                requiredFile: this.formDataDoc.requiredFile,
-                after_approval: this.formDataDoc.after_approval,
-                project: "DITS Project",
-                tag: this.formDataDoc.tagArr,
-                create: "8/01/2023 12:45",
-                due_date: "17/02/2023 12:45",
-                status: "Draft",
-                member: this.formDataDoc.addMember,
-                action: false
-
-            })
-            this.dailogCreateDoc = false
-        },
         submitReject() {
-            this.DocList.push({
-                id: 1,
-                name: this.formDataDoc.doc_name,
-                type: this.formDataDoc.doc_type,
-                note: this.formDataDoc.note,
-                allFile: this.formDataDoc.allFile,
-                allRelated: this.formDataDoc.allRelated,
-                seq_order: this.formDataDoc.seq_order,
-                requiredFile: this.formDataDoc.requiredFile,
-                after_approval: this.formDataDoc.after_approval,
-                project: "DITS Project",
-                tag: this.formDataDoc.tagArr,
-                create: "8/01/2023 12:45",
-                due_date: "17/02/2023 12:45",
-                status: "Reject",
-                member: this.formDataDoc.addMember,
-                action: false
+            // const tags = this.formDataDoc.tagArr.map(item => item.id);
+            // const member = this.formDataDoc.addMember.map(item => item.id)
+            axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
+                "data": {
+                    // "docName": this.formDataDoc.doc_name,
+                    // "document_type": this.formDataDoc.doc_type,
+                    // "tags": tags,
+                    // "dueDate": this.formDataDoc.date,
+                    // "note": this.formDataDoc.note,
+                    // "sequentialOrder": this.formDataDoc.seq_order,
+                    // "relatedUser": member,
+                    "noteSpecial":this.formDataDoc.noteSpecial,
+                    "status": 5
+                }
+            }).then(() => {
+                this.getDocList(this.filterSearch)
             })
+            // this.DocList.push({
+            //     id: 1,
+            //     name: this.formDataDoc.doc_name,
+            //     type: this.formDataDoc.doc_type,
+            //     note: this.formDataDoc.note,
+            //     allFile: this.formDataDoc.allFile,
+            //     allRelated: this.formDataDoc.allRelated,
+            //     seq_order: this.formDataDoc.seq_order,
+            //     requiredFile: this.formDataDoc.requiredFile,
+            //     after_approval: this.formDataDoc.after_approval,
+            //     project: "DITS Project",
+            //     tag: this.formDataDoc.tagArr,
+            //     create: "8/01/2023 12:45",
+            //     due_date: "17/02/2023 12:45",
+            //     status: "Reject",
+            //     member: this.formDataDoc.addMember,
+            //     action: false
+            // })
             this.dailogStep2 = false
             this.dailogReject = false
         },
@@ -1964,12 +2111,14 @@ export default {
         },
         createDoc() {
             this.is_edit = false
-            this.formDataDoc.doc_name = '',
-                this.formDataDoc.doc_type = '',
-                this.formDataDoc.date = '',
+            this.getUsers()
+            this.getPorjectDetail()
+            // this.formDataDoc.doc_name = '',
+            //     this.formDataDoc.doc_type = '',
+            this.formDataDoc.date = '',
                 this.formDataDoc.note = '',
                 this.formDataDoc.status = '',
-                this.formDataDoc.seq_order = null,
+                this.formDataDoc.seq_order = false,
                 this.formDataDoc.after_approval = false,
                 this.formDataDoc.tagArr = [],
                 this.formDataDoc.allFile = [],
@@ -1979,9 +2128,18 @@ export default {
             this.dailogCreateDoc = true
         },
         startFlow() {
-            this.dailogStep2 = false
-            this.dailogStep3 = true
-
+            // console.log(this.checkRevise);
+            const allApproved = this.formDataDoc.addMember.every((item) => item.approved === true);
+            axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
+                "data": {
+                    "status": this.checkRevise == true ? 3 : allApproved == true ? 4 : 2
+                }
+            }).then(() => {
+                this.formDataDoc.status = 4,
+                    this.getDocList(this.filterSearch)
+                this.dailogStep2 = false
+                // this.dialogSuccess = true
+            })
         },
         closeDialog() {
             this.dailogCreateDoc = false
@@ -1999,8 +2157,15 @@ export default {
                 this.formDataDoc.addMember = []
         },
         startComfirm() {
-
-            this.dailogRevis = true
+            axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
+                "data": {
+                    "status": 2,
+                }
+            })
+            setTimeout(() => {
+                this.getDocList(this.filterSearch)
+            }, 200)
+            this.dailogStep3 = false
         },
         startRevis() {
             this.DocList.push({
@@ -2052,23 +2217,38 @@ export default {
             this.formDataDoc.allRelated.splice(i, 1)
         },
 
-        getDocList() {
-            // console.log(this.$route?.query.approve);
+        getDocList(seaech) {
             this.items = []
             const checkSequen = this.$route.query.seq ? this.$route.query.seq : ''
             this.filterList.status = this.$route.query.approve ? this.$route.query.approve : this.filterList.status
-            this.filterList.project = this.$route.query.project ? this.$route.query.project : this.filterList.project
+            // this.filterList.project = this.$route.query.project ? this.$route.query.project : this.filterList.project
             const checkFav = this.$route.query.favorte ? this.$route.query.favorte : this.filterList.favorite ? 'true' : ''
-            fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&pagination[page]='+this.page+
-                '&filters[status][$containsi]='+this.filterList.status+'&pagination[pageSize]=10&filters[favoriteDoc][$containsi]='
-                +checkFav+'&filters[project][id][$containsi]='+this.filterList.project+'&filters[sequentialOrder][$containsi]='+checkSequen)
-            // fetch('http://27.254.144.88:1337/api' +'/documents?populate=*&pagination[page]=1&filters[status][$containsi]='+this.filterList.status+'&pagination[pageSize]=10&filters[favoriteDoc][$containsi]=&filters[project][id][$containsi]=&filters[sequentialOrder][$containsi]=')
+            fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&pagination[page]=' + this.page +
+                '&filters[status][$containsi]=' + this.filterList.status + '&pagination[pageSize]=10&filters[favoriteDoc][$containsi]='
+                + checkFav + '&filters[project][id][$containsi]=' + this.filterList.project + '&filters[sequentialOrder][$containsi]=' + checkSequen + '&filters[tags][id][$containsi]=' + this.filterList.tag
+                + '&filters[relatedUser][id][$containsi]=' + this.filterList.assigned + '&filters[docName][$containsi]='+seaech)
+                // fetch('http://27.254.144.88:1337/api' +'/documents?populate=*&pagination[page]=1&filters[status][$containsi]='+this.filterList.status+'&pagination[pageSize]=10&filters[favoriteDoc][$containsi]=&filters[project][id][$containsi]=&filters[sequentialOrder][$containsi]=')
                 .then(response => response.json())
                 .then((resp) => {
-                    this.lengthPage = resp.meta.pagination.pageCount
-                    const arr = []
-                    arr.push(resp.data)
-                    this.items = arr[0]
+                    // console.log(this.checkViewPermission)
+                    if (this.checkViewPermission == false) {
+                        resp.data.forEach((data) => {
+                            // console.log(data.attributes.relatedUser);
+                            data.attributes.relatedUser.data.forEach((data2) => {
+                                if (this.$store.state.userInfo.id == data2.id) {
+                                    this.items.push(data)
+                                }
+                            })
+                            // console.log(data)
+                        })
+                    }
+                    else {
+                        this.lengthPage = resp.meta.pagination.pageCount
+                        const arr = []
+                        arr.push(resp.data)
+                        this.items = arr[0]
+                    }
+
                 })
         },
         covertDate2(val) {
@@ -2076,22 +2256,24 @@ export default {
             return (dateCovert[0].toString()) + '-' + (dateCovert[1].toString()) + '-' + (dateCovert[2].toString())
         },
         getUsers() {
-            fetch('http://27.254.144.88:1337/api' + '/users?populate=*')
+            this.dataMember = []
+            fetch('http://27.254.144.88:1337/api' + '/projects/' + this.$route.query.project + '?populate=*')
                 .then(response => response.json())
                 .then((resp) => {
-                    resp.forEach((data, i) => {
+                    this.checkViewPermission = resp.data.attributes.viewPermission
+                    resp.data.attributes.member.data.forEach((data, i) => {
                         this.dataMember.push({
-                            name: data.firstName + ' ' + data.lastName,
-                            img: data.profilePic == null ? '' : 'http://27.254.144.88:1337' + data.profilePic.url,
+                            name: data.attributes.firstName + ' ' + data.attributes.lastName,
+                            // img: data.profilePic == null ? '' : 'http://27.254.144.88:1337' + data.profilePic.url,
+                            img: '',
                             id: data.id,
                             index: i + 1,
                         })
                     })
-
                 })
         },
         getProject() {
-            fetch('http://27.254.144.88:1337/api' + '/projects?populate=*')
+            fetch('http://27.254.144.88:1337/api' + '/projects?populate=*&filters[organization][id][$eq]=' + this.$store.state.userDetail.organization.id)
                 .then(response => response.json())
                 .then((resp) => {
                     const arr = []
@@ -2100,35 +2282,121 @@ export default {
                 })
         },
         getFiles() {
-            fetch('http://27.254.144.88:1337/api' + '/document-files?populate=*&filters[document][id][$eq]=' + this.formDataDoc.id)
+            this.formDataDoc.allFile = []
+            this.formDataDoc.addMember = []
+            fetch('http://27.254.144.88:1337/api' + '/approval-responsibilities?populate=*&filters[id_document][id][$eq]=' + this.formDataDoc.id + '&filters[user][id][$eq]=' + this.$store.state.userInfo.id)
                 .then(response => response.json())
                 .then((resp) => {
                     resp.data.forEach(data => {
-                        this.formDataDoc.allFile.push({
-                            id: data.id,
-                            name: data.attributes.fileName,
-                            size: data.attributes.fileSize,
-                            type: true, //true คือ Approve false คือ Revise all
-                            checkSignal: false
-
-                        })
-
-                    });
+                        if (data.attributes.document_file.data) {
+                            this.formDataDoc.allFile.push({
+                                idApprovalResponsibilities: data.id,
+                                id: data.attributes.document_file.data?.id,
+                                name: data.attributes.document_file.data?.attributes.fileName,
+                                size: data.attributes.document_file.data?.attributes.fileSize,
+                                path: data.attributes.document_file.data?.attributes.filePath,
+                                revise: data.attributes.revise,
+                                popup: false,
+                                type: null, //true คือ Approve false คือ Revise all
+                                checkSignal: data.attributes.approved,
+                                signature: data.attributes.document_file.data?.attributes.signature
+                            })
+                        }
+                    })
                     resp.data.forEach(data => {
-                        this.checkFile.push({
-                            id: data.id,
-                            name: data.attributes.fileName,
-                            size: data.attributes.fileSize,
-                            type: true, //true คือ Approve false คือ Revise all
-                            checkSignal: false
-
-                        })
-
+                        if (data.attributes.document_file.data) {
+                            this.checkFile.push({
+                                id: data.attributes.document_file.data?.id,
+                                name: data.attributes.document_file.data?.attributes.fileName,
+                                size: data.attributes.document_file.data?.attributes.fileSize,
+                                path: data.attributes.document_file.data?.attributes.filePath,
+                                type: true, //true คือ Approve false คือ Revise all
+                                checkSignal: data.attributes.approved,
+                                signature: data.attributes.document_file.data?.attributes.signature
+                            })
+                        }
                     });
+                    let value = null;
+                    let allCheckSignalsTrue = true;
+                    for (const item of this.formDataDoc.allFile) {
+                        if (!item.checkSignal) {
+                            allCheckSignalsTrue = false;
+                            break;
+                        }
+                    }
+                    if (allCheckSignalsTrue) {
+                        // fetch('http://27.254.144.88:1337/api' + '/approval-responsibilities?populate=*&filters[id_document][id][$eq]=' + this.formDataDoc.id + '&filters[user][id][$eq]=' + this.$store.state.userInfo.id)
+                        //     .then(response => response.json())
+                        //     .then((resp) => {
+                        //         const data = resp.data.map(item => item.id)
+                        //         data.forEach(element => {
+                        //             axios.put('http://27.254.144.88:1337/api/approval-responsibilities/'+element,{
+                        //                 "data":{
+                        //                     "approved": this.checkApprove,
+                        //                 }
+                        //             })
+                        //         });
+                        //     })
+                        this.checkApprove = true;
+                    }
+
+                    // console.log(this.checkApprove);
+
+                    fetch('http://27.254.144.88:1337/api' + '/approval-responsibilities?populate=*&filters[id_document][id][$eq]=' + this.formDataDoc.id+'&filters[document_file][signature][$eq]=true')
+                        .then(response => response.json())
+                        .then((resp) => {
+                            const dataMem = []
+                            resp.data.forEach(data => {
+                                dataMem.push({
+                                    id: data.attributes.user.data.id,
+                                    name: data.attributes.user.data.attributes.firstName + '' + data.attributes.user.data.attributes.lastName,
+                                    img: '',
+                                    revise: data.attributes.revise,
+                                    sequenceOrder: data.attributes.sequenceOrder,
+                                    approved: data.attributes.approved
+                                });
+                            })
+                            console.log(dataMem);
+                            const resultMap = new Map();
+                            for (const item of dataMem) {
+                                const { id, approved, revise } = item;
+                                if (!resultMap.has(id)) {
+                                    resultMap.set(id, { id, name: item.name, revise: null, img: item.img, sequenceOrder: item.sequenceOrder, approved: null });
+                                }
+                                const storedItem = resultMap.get(id);
+                                if (approved === true && storedItem.approved !== false) {
+                                    storedItem.approved = true;
+                                } else if (approved === false) {
+                                    storedItem.approved = false;
+                                }
+                                if (revise === false && storedItem.revise !== true) {
+                                    storedItem.revise = false;
+                                } else if (revise === true) {
+                                    storedItem.revise = true;
+                                }
+                            }
+                            this.formDataDoc.addMember = Array.from(resultMap.values());
+                            console.log(this.formDataDoc.addMember);
+                            // console.log(result);
+                            // var uniqueIds = new Set();
+                            // // Filter out the duplicate IDs
+                            // this.formDataDoc.addMember = dataMem.filter(function (member) {
+                            //     var id = member.id;
+                            //     // If the ID is not already present in the Set, add it and keep the member
+                            //     if (!uniqueIds.has(id)) {
+                            //         uniqueIds.add(id);
+                            //         return true;
+                            //     }
+                            //     // If the ID is already present, discard the member
+                            //     return false;
+                            // });
+                        })
+                })
+                .finally(() => {
+                    this.openPDF = false
                 })
 
         },
-
         fetchTag() {
             fetch('http://27.254.144.88:1337/api' + '/tags?populate=*')
                 .then(response => response.json())
@@ -2147,125 +2415,177 @@ export default {
                     this.doc_type = arr[0]
                 })
         },
+        covertDay(data) {
+            const date = new Date(data);
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-GB', options);
+            return formattedDate
+        },
         fetchDetail(id) {
             this.is_edit = true
+            const status = ''
             this.formDataDoc.allFile = [],
                 this.formDataDoc.tagArr = []
             this.formDataDoc.addMember = []
             fetch('http://27.254.144.88:1337/api' + '/documents/' + id + '?populate=*')
                 .then(response => response.json())
                 .then((resp) => {
-                    if (resp.data.attributes.status === 1) {
-                        this.formDataDoc.id = resp.data.id
-                        this.dailogCreateDoc = true
-                        this.formDataDoc.doc_name = resp.data.attributes.docName
-                        this.formDataDoc.status = resp.data.attributes.status
-                        this.formDataDoc.seq_order = resp.data.attributes.sequentialOrder
-                        this.formDataDoc.date = this.covertDate2(resp.data.attributes.dueDate)
-                        resp.data.attributes.tags.data.forEach((data, i) => {
-                            this.formDataDoc.tagArr.push({
-                                name: data.attributes.tagName,
-                                id: data.id
-                            });
-
-                        })
-                        resp.data.attributes.relatedUser.data.forEach((data, i) => {
-
-                            this.formDataDoc.addMember.push({
-                                id: data.id,
-                                name: data.attributes.firstName + ' ' + data.attributes.laststName,
-                                img: '',
-                            });
-
-                        })
-                        this.formDataDoc.note = resp.data.attributes.note
-                        this.formDataDoc.doc_type = resp.data.attributes.document_type.data?.id
+                    this.status = resp.data.attributes.status
+                    this.formDataDoc.createAt = this.covertDate2(resp.data.attributes.createdAt)
+                    this.formDataDoc.id = resp.data.id
+                    this.formDataDoc.note = resp.data.attributes.note
+                    this.formDataDoc.noteSpecial = resp.data.attributes.noteSpecial
+                    this.formDataDoc.createBy = resp.data.attributes.createBy.data
+                    this.formDataDoc.doc_name = resp.data.attributes.docName
+                    this.formDataDoc.status = resp.data.attributes.status
+                    this.formDataDoc.seq_order = resp.data.attributes.sequentialOrder
+                    this.formDataDoc.date = this.covertDate2(resp.data.attributes.dueDate)
+                    resp.data.attributes.tags.data.forEach((data, i) => {
+                        this.formDataDoc.tagArr.push({
+                            name: data.attributes.tagName,
+                            id: data.id
+                        });
+                    })
+                    this.formDataDoc.note = resp.data.attributes.note
+                    this.formDataDoc.doc_type = resp.data.attributes.document_type.data?.attributes.documentTypeName
+                    setTimeout(() => {
                         this.getFiles()
+                    }, 200);
+                }).finally(() => {
+                    if (this.status === 1) {
+                        this.dailogCreateDoc = true
                     }
-
+                    else if (this.status === 2) {
+                        this.dailogStep2 = true
+                    }
+                    else if (this.status === 5 || this.status === 4) {
+                        this.dialogSuccess = true
+                    }
+                    else if (this.status === 3) {
+                        if (this.$store.state.userInfo.id == this.formDataDoc.createBy.id) {
+                            this.dailogStep3 = true
+                        }
+                    }
                 })
-            // if (data.status == "Draft") {
-            //     console.log(data);
-            //     this.dailogCreateDoc = true
-            //     this.formDataDoc.doc_name = data.name,
-            //         this.formDataDoc.doc_type = data.type,
-            //         this.formDataDoc.date = '',
-            //         this.formDataDoc.status = data.staus
-            //    
-            //         this.formDataDoc.seq_order = data.seq_order,
-            //         this.formDataDoc.after_approval = data.after_approval,
-            //         
-            //         this.formDataDoc.allFile = data.allFile,
-            //         this.formDataDoc.allRelated = data.allRelated,
-            //         this.formDataDoc.requiredFile = false
-            // }
-            // else if (data.status == "Reject") {
-            //     console.log(data);
-            //     this.dialogSuccess = true
-            //     this.formDataDoc.doc_name = data.name,
-            //         this.formDataDoc.doc_type = data.type,
-            //         this.formDataDoc.date = '',
-            //         this.formDataDoc.note = data.note,
-            //         this.formDataDoc.seq_order = data.seq_order,
-            //         this.formDataDoc.after_approval = data.after_approval,
-            //         this.formDataDoc.tagArr = data.tag,
-            //         this.formDataDoc.allFile = data.allFile,
-            //         this.formDataDoc.allRelated = data.allRelated,
-            //         this.formDataDoc.requiredFile = false
-
-            // }
-
         },
         saveOrEdit() {
             const tags = this.formDataDoc.tagArr.map(item => item.id);
             const member = this.formDataDoc.addMember.map(item => item.id)
-            axios.post('http://27.254.144.88:1337/api' + '/documents', {
-                "data": {
-                    "docName": this.formDataDoc.doc_name,
-                    "document_type": this.formDataDoc.doc_type,
-                    "document_folder": 1,
-                    "tags": tags,
-                    "dueDate": this.formDataDoc.date,
-                    "note": this.formDataDoc.note,
-                    "sequentialOrder": this.formDataDoc.seq_order,
-                    "project": 1,
-                    "relatedUser": member,
-                    "status": 1
-                }
-            })
-                .then((resp2) => {
-                    this.dailogCreateDoc = false
-                    this.getDocList()
-                    this.formDataDoc.allFile.forEach(data => {
-                        axios.post('http://27.254.144.88:1337/api' + '/document-files', {
+            if (this.is_edit == true) {
+                axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
+                    "data": {
+                        "docName": this.formDataDoc.doc_name,
+                        "document_type": this.formDataDoc.doc_type,
+                        "tags": tags,
+                        "favoriteDoc": false,
+                        "dueDate": this.formDataDoc.date,
+                        "note": this.formDataDoc.note,
+                        "sequentialOrder": this.formDataDoc.seq_order,
+                        "relatedUser": member,
+                        "status": 2
+                    }
+                })
+                    .then((resp2) => {
+                        this.dailogCreateDoc = false
+                        this.getDocList(this.filterSearch)
+                        const mergedArray = [...this.formDataDoc.allFile, ...this.checkFile];
+                        const countMap = mergedArray.reduce((acc, obj) => {
+                            if (!acc[obj.name]) {
+                                acc[obj.name] = 0;
+                            }
+                            acc[obj.name]++;
+                            return acc;
+                        }, {});
+                        const result = mergedArray.filter(obj => countMap[obj.name] === 1);
+                        result.forEach(data => {
+                            axios.post('http://27.254.144.88:1337/api' + '/document-files', {
+                                "data": {
+                                    "fileName": data.name,
+                                    "filePath": 'http://27.254.144.88:1337' + data.url,
+                                    "fileSize": data.size,
+                                    "document_folder": this.formDataDoc.doc_folder,
+                                    "revise": false,
+                                    "fileContent": null,
+                                    "document": resp2.data.data.id
+                                }
+                            })
+
+                        })
+                        this.fetchDetail(resp2.data.data.id)
+                        this.dailogStep2 = true
+                    })
+                    .catch(function (error) {
+                    });
+            }
+            else if (this.is_edit == false) {
+                axios.post('http://27.254.144.88:1337/api' + '/documents/', {
+                    "data": {
+                        "docName": this.formDataDoc.doc_name,
+                        "document_type": this.formDataDoc.doc_type,
+                        "tags": tags,
+                        "document_folder":this.formDataDoc.doc_folder,
+                        "favoriteDoc": false,
+                        "dueDate": this.formDataDoc.date,
+                        "note": this.formDataDoc.note,
+                        "sequentialOrder": this.formDataDoc.seq_order,
+                        "project": parseInt(this.$route.query.project),
+                        "createBy": this.$store.state.userInfo.id,
+                        "relatedUser": member,
+                        "status": 2
+                    }
+                })
+                    .then((resp2) => {
+                        axios.put('http://27.254.144.88:1337/api' + '/document-types/' + this.formDataDoc.doc_type, {
                             "data": {
-                                "fileName": data.name,
-                                "filePath": 'http://27.254.144.88:1337' + data.url,
-                                "fileSize": data.size,
-                                "document_folder": null,
-                                "fileContent": null,
-                                "document": resp2.data.data.id
+                                "nextNumber": this.nextNumbering,
                             }
                         })
+                        this.getDocList(this.filterSearch)
+                        this.dailogCreateDoc = false
+                        this.formDataDoc.allFile.forEach(data => {
+                            // console.log(data.required);
+                            axios.post('http://27.254.144.88:1337/api' + '/document-files', {
+                                "data": {
+                                    "fileName": data.name,
+                                    "filePath": 'http://27.254.144.88:1337' + data.url,
+                                    "fileSize": data.size,
+                                    "document_folder": this.formDataDoc.doc_folder,
+                                    "revise": false,
+                                    "signature": data.requireFile,
+                                    "fileContent": null,
+                                    // "signature" : this.switchStates[index] ? true : false,
+                                    "document": resp2.data.data.id
+                                }
+                            }).then((resp3) => {
+                                member.forEach((data, i) => {
+                                    axios.post('http://27.254.144.88:1337/api' + '/approval-responsibilities', {
+                                        "data": {
+                                            "approved": false,
+                                            "document_file": resp3.data.data.id,
+                                            "user": data,
+                                            "revise": false,
+                                            "sequenceOrder": resp2.data.data.attributes.sequentialOrder ? i + 1 : null,
+                                            "id_document": resp2.data.data.id
+                                        }
+                                    })
+                                })
+                            })
+                        })
+                        this.fetchDetail(resp2.data.data.id)
+                        this.dailogStep2 = true
                     })
-
-                })
-                .catch(function (error) {
-
-                });
-
-
+                    .catch(function (error) {
+                    });
+            }
         },
         submitDarft() {
             if (this.is_edit == true) {
-                console.log(this.checkFile);
                 const tags = this.formDataDoc.tagArr.map(item => item.id);
                 const member = this.formDataDoc.addMember.map(item => item.id)
                 axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
                     "data": {
                         "docName": this.formDataDoc.doc_name,
                         "document_type": this.formDataDoc.doc_type,
-                        "dSocument_folder": 1,
                         "tags": tags,
                         "dueDate": this.formDataDoc.date,
                         "note": this.formDataDoc.note,
@@ -2285,76 +2605,110 @@ export default {
                             return acc;
                         }, {});
                         const result = mergedArray.filter(obj => countMap[obj.name] === 1);
-                        console.log(this.checkFile);
                         result.forEach(data => {
                             axios.post('http://27.254.144.88:1337/api' + '/document-files', {
                                 "data": {
                                     "fileName": data.name,
                                     "filePath": 'http://27.254.144.88:1337' + data.url,
                                     "fileSize": data.size,
-                                    "document_folder": null,
+                                    "document_folder": this.formDataDoc.doc_folder,
+                                    "revise": false,
+                                    "signature" : data.requireFile,
                                     "fileContent": null,
                                     "document": resp2.data.data.id
                                 }
+                            }).then((resp3) => {
+                                member.forEach((data, i) => {
+                                    axios.post('http://27.254.144.88:1337/api' + '/approval-responsibilities', {
+                                        "data": {
+                                            "approved": false,
+                                            "document_file": resp3.data.data.id,
+                                            "user": data,
+                                            "sequenceOrder": resp2.data.data.attributes.sequentialOrder ? i + 1 : null,
+                                            "id_document": resp2.data.data.id
+                                        }
+                                    })
+                                })
                             })
-
                         })
-                        this.getDocList()
+                        this.getDocList(this.filterSearch)
                     })
                     .catch(function (error) {
-
                     });
 
             }
             else {
+                let idFile = '';
+                const sequentialOrder = null;
+                const idDoc = '';
                 const tags = this.formDataDoc.tagArr.map(item => item.id);
                 const member = this.formDataDoc.addMember.map(item => item.id)
                 axios.post('http://27.254.144.88:1337/api' + '/documents', {
                     "data": {
                         "docName": this.formDataDoc.doc_name,
                         "document_type": this.formDataDoc.doc_type,
-                        "document_folder": 1,
+                        "document_folder":this.formDataDoc.doc_folder,
                         "tags": tags,
                         "dueDate": this.formDataDoc.date,
                         "note": this.formDataDoc.note,
                         "sequentialOrder": this.formDataDoc.seq_order,
-                        "project":   parseInt(this.$route.query.project),
+                        "project": parseInt(this.$route.query.project),
                         "relatedUser": member,
+                        "createBy": this.$store.state.userInfo.id,
                         "favoriteDoc": false,
                         "status": 1
                     }
                 })
                     .then((resp2) => {
+                        axios.put('http://27.254.144.88:1337/api' + '/document-types/' + this.formDataDoc.doc_type, {
+                            "data": {
+                                "nextNumber": this.nextNumbering,
+                            }
+                        })
+                        this.idDoc = resp2.data.data.id
+                        this.sequentialOrder = resp2.data.data.attributes.sequentialOrder
                         this.dailogCreateDoc = false
-                        this.getDocList()
+                        this.getDocList(this.filterSearch)
                         this.formDataDoc.allFile.forEach(data => {
                             axios.post('http://27.254.144.88:1337/api' + '/document-files', {
                                 "data": {
                                     "fileName": data.name,
                                     "filePath": 'http://27.254.144.88:1337' + data.url,
                                     "fileSize": data.size,
-                                    "document_folder": null,
+                                    "document_folder": this.formDataDoc.doc_folder,
+                                    "signature": data.requireFile,
+                                    "revise": false,
                                     "fileContent": null,
                                     "document": resp2.data.data.id
                                 }
+                            }).then((resp3) => {
+                                member.forEach((data, i) => {
+                                    axios.post('http://27.254.144.88:1337/api' + '/approval-responsibilities', {
+                                        "data": {
+                                            "approved": false,
+                                            "document_file": resp3.data.data.id,
+                                            "user": data,
+                                            "sequenceOrder": this.sequentialOrder == false ? i + 1 : null,
+                                            "id_document": this.idDoc
+                                        }
+                                    })
+                                })
                             })
                         })
 
+                    }).finally(() => {
+
                     })
                     .catch(function (error) {
-
                     });
             }
-
         },
         changeFavorite(status, id) {
-            console.log(status);
             axios.put('http://27.254.144.88:1337/api' + '/documents/' + id, {
                 "data": {
                     "favoriteDoc": status
                 }
             })
-
         },
         clearfilter() {
             this.$route.query.approve = ''
@@ -2362,12 +2716,142 @@ export default {
             this.$route.query.favorite = false
             this.filterList.assigned = ''
             this.filterList.favorite = false
-            this.filterList.project = ''
+            this.filterList.project = this.$route.query.project
             this.filterList.status = ''
             this.filterList.tag = ''
-            this.getDocList()
+            this.getDocList(this.filterSearch)
+        },
+        downloadPDF(url, name) {
+            axios({
+                url: url,
+                method: 'GET',
+                responseType: 'blob',
+            }).then((response) => {
+                var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                var fileLink = document.createElement('a');
+                fileLink.href = fileURL;
+                fileLink.setAttribute('download', name);
+                document.body.appendChild(fileLink);
+                fileLink.click();
+            });
+        },
+        checkRoleSingnal(path, id, idApprovalResponsibilities) {
+            const foundMember = this.formDataDoc.addMember.find(member => member.id === this.$store.state.userInfo.id);
+            if (foundMember) {
+                if (foundMember.sequenceOrder == 1) {
+                    this.openPupupPDF(path, id, idApprovalResponsibilities)
+                    console.log('ถึงคิวแล้ว คิวแรก');
+                }
+                else {
+                    if (this.formDataDoc.addMember[foundMember.sequenceOrder - 2].approved == true) {
+                        this.openPupupPDF(path, id, idApprovalResponsibilities)
+                        console.log("ถึงคิวแล้ว")
+                    }
+                    else {
+                        console.log('ยังไม่ถึงคิว');
+                    }
+                }
+                // else{
+                //     console.log("")
+                // }
+                console.log('Found member:', foundMember);
+            } else {
+                console.log('idUser does not exist in the member array.');
+            }
+        },
+        test() {
+            const r = this.formDataDoc.addMember.filter(item => item.approved);
+            return r.length
+
+        },
+        getPorjectDetail() {
+            fetch('http://27.254.144.88:1337/api' + '/projects/' + parseInt(this.$route.query.project) + '?populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    console.log(resp);
+                    this.formDataDoc.doc_type = resp.data.attributes.defaultType.data.id
+                    axios.post('http://27.254.144.88:1337/api/generateId?docType=' + resp.data.attributes.defaultType.data.id, {
+                        "pattern": resp.data.attributes.defaultType.data.attributes.pattern
+                    }).then((resp2) => {
+                        fetch('http://27.254.144.88:1337/api' + '/document-types/'+resp.data.attributes.defaultType.data.id+ '?populate=*')
+                        .then(response => response.json())
+                        .then((resp3)=>{
+                            this.formDataDoc.doc_folder = resp3.data.attributes.createFolder.data.id
+                        })
+                        this.nextNumbering = resp2.data.arr.nextNumber - 1
+                        this.formDataDoc.doc_name = resp2.data.arr.reslt
+                    })
+                })
+        },
+        changeDocType(id) {
+            setTimeout(() => {
+                fetch('http://27.254.144.88:1337/api' + '/document-types/' + id + '?populate=*')
+                    .then(response => response.json())
+                    .then((resp) => {
+                        this.formDataDoc.doc_folder = resp.data.attributes.createFolder.data.id
+                        // this.formDataDoc.doc_type = resp.data.attributes.defaultType.data.id  
+                        // console.log(this.formDataDoc.doc_type);
+                        axios.post('http://27.254.144.88:1337/api/generateId?docType=' + this.formDataDoc.doc_type, {
+                            "pattern": resp.data.attributes.pattern
+                        }).then((resp2) => {
+                            this.nextNumbering = resp2.data.arr.nextNumber - 1
+                            this.formDataDoc.doc_name = resp2.data.arr.reslt
+                        })
+                    })
+            }, 500)
+        }, changeRvise(data, id, idFile,) {
+            this.checkRevise = data
+            fetch('http://27.254.144.88:1337/api/' + 'approval-responsibilities?populate=*&filters[document_file][id][$eq]=' + idFile)
+                .then(response => response.json())
+                .then((resp) => {
+                    resp.data.forEach((data2) => {
+                        console.log(data2);
+                        axios.put('http://27.254.144.88:1337/api' + '/approval-responsibilities/' + data2.id, {
+                            "data": {
+                                "revise": true,
+                            }
+                        })
+                    })
+                })
+            axios.put('http://27.254.144.88:1337/api' + '/approval-responsibilities/' + id, {
+                "data": {
+                    "revise": data,
+                }
+            })
+            axios.put('http://27.254.144.88:1337/api' + '/document-files/' + idFile, {
+                "data": {
+                    "revise": data,
+                }
+            })
+            axios.put('http://27.254.144.88:1337/api' + '/documents/' + this.formDataDoc.id, {
+                "data": {
+                    "status": data == true ? 3 : 2,
+                }
+            })
+        },
+        // filterSearchText() {
+        //     console.log('df');
+        //     this.filterSearch = this.filterList.text
+        //     setTimeout(() => {
+        //         this.getDocList()
+        //     }, 500)
+        // },
+        handleSearch() {
+            clearTimeout(this.timer); // Clear the previous timer if it exists
+            this.timer = setTimeout(() => {
+                this.getDocList(this.filterSearch);
+            }, 200);
         }
-    }
+    },
+    watch: {
+        filterSearch(newTerm) {
+            clearTimeout(this.timer); // Clear the previous timer if it exists
+            this.timer = setTimeout(() => {
+                this.getDocList(newTerm);
+            }, 200);
+        }
+    },
+
 
 }
 </script>

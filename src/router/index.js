@@ -12,7 +12,10 @@ import UserManage from '@/views/setting/userManage/UserManage'
 import PlanEditor from '@/views/setting/planEditor/PlanEditor'
 import NotificationEmployee from '@/views/setting/notification/NotificationEm.vue'
 import DocType from '@/views/DocumentType/DocType.vue'
+import Plan from '@/views/setting/plans/Plan'
 import DashBoardEm from '@/views/dashEmployee/DashBoardEm.vue'
+import DashAll from '@/views/dashboardAll/DashAll'
+import store from '../store'
 
 
 Vue.use(VueRouter)
@@ -31,19 +34,19 @@ const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: DashBoard,
+    component:DashAll,
     meta: {
       title:'Dashboard'
     }
   },
-  {
-    path: '/DashBoardEm',
-    name: 'Dashboard',
-    component: DashBoardEm,
-    meta: {
-      title:'Dashboard'
-    }
-  },
+  // {
+  //   path: '/DashBoardEm',
+  //   name: 'Dashboard',
+  //   component: DashBoardEm,
+  //   meta: {
+  //     title:'Dashboard'
+  //   }
+  // },
   {
     path: '/document',
     name: 'Document',
@@ -108,6 +111,24 @@ const routes = [
     path: '/setting/plan-editor',
     name: 'PlanEditor',
     component: PlanEditor,
+    meta: {
+      title:'Setting',
+      desc:'Plan'
+    } 
+  },
+  {
+    path: '/setting/plans',
+    name: 'Plans',
+    component: Plan,
+    meta: {
+      title:'Setting',
+      desc:'Plan'
+    } 
+  },
+  {
+    path: '/setting/plans',
+    name: 'Plans',
+    component: Plan,
     meta: {
       title:'Setting',
       desc:'Plan'

@@ -24,9 +24,9 @@
                         <input type="file" ref="file" id="upload" hidden @change="showImagePreview($event)"
                             accept="image/*" />
                         <label class="flex cursor-pointer" for="upload">
-                            <div v-if="preview != null" class="w-[110px] h-[110px] rounded-[100px] overflow-hidden flex justify-center items-center">
-                                <img  :src="preview"
-                                    alt="">
+                            <div v-if="preview != null"
+                                class="w-[110px] h-[110px] rounded-[100px] overflow-hidden flex justify-center items-center">
+                                <img :src="preview" alt="">
                             </div>
                             <div v-else
                                 class="w-[110px] h-[110px] rounded-[100px] bg-[#7C94D2] text-white flex justify-center items-center font-bold">
@@ -54,7 +54,7 @@
                         <div class="text-[12px] font-bold">Phone number</div>
                         <div class="mt-[8px]"><input class="w-[100%] h-[38px]" v-model="dataProfile.phone" /></div>
                     </div>
-                    <div class="col-span-2">
+                    <div class="col-span-2" v-if="$store.state.userDetail.role.name == 'Employee'">
                         <div class="text-[12px] font-bold">Organization name</div>
                         <select class="mt-[8px] select-opt w-[100%] h-[38px] rounded-[6px]"
                             v-model="dataProfile.organization">
@@ -62,7 +62,7 @@
                             <option v-for="(data, i) in org" :value="data.id">{{ data.attributes.orgName }}</option>
                         </select>
                     </div>
-                    <div>
+                    <div v-if="$store.state.userDetail.role.name == 'Employee'">
                         <div class="text-[12px] font-bold">Role</div>
                         <div class="mt-[8px]">
                             <select class=" select-opt w-[100%] h-[38px] rounded-[6px]" v-model="dataProfile.role">
@@ -72,7 +72,7 @@
                             </select>
                         </div>
                     </div>
-                    <div>
+                    <div v-if="$store.state.userDetail.role.name == 'Employee'">
                         <div class="text-[12px] font-bold">Team</div>
                         <div class="mt-[8px]">
                             <select class=" select-opt w-[100%] h-[38px] rounded-[6px]" v-model="dataProfile.team">
@@ -86,42 +86,64 @@
                         <div class="mt-[8px]"><input class="w-[100%] h-[38px]" v-model="dataProfile.address" /></div>
                     </div>
                 </div>
-                <div class="flex justify-end"><vs-button :loading="loading " @click="editProfile()">Save</vs-button></div>
+                <div class="flex justify-end"><vs-button :loading="loading" @click="editProfile()">Save</vs-button></div>
                 <hr />
                 <div>
                     <div class="text-[12px] font-bold">Connect your account</div>
                     <div class="grid grid-cols-4 w-[100%] mt-[23px]">
                         <div class="flex justify-between w-[70%] ">
-                            <div class="flex">
+                            <div class="flex justify-center items-center">
                                 <!-- <img class="mr-[8px] w-[22px] h-[22px] text-center" :src="logo_google" /> -->
                                 <div>Google</div>
                             </div>
-                            <div
+                            <div v-if="dataProfile.google" class="flex">
+                                 <div ><md-icon style=" color:green;">done</md-icon></div>
+                                <div>
+                                    <div class="w-[70px] h-[28px] flex justify-center items-center font-bold rounded-[5px] text-[14px]">Connect
+                                    </div>
+                                    <!-- <div
+                                        class="w-[70px] h-[28px] text-[12px] flex justify-center items-center rounded-[5px]">
+                                        (disconnect)</div> -->
+                                </div>
+
+                            </div>
+                            <div v-else
                                 class="w-[70px] h-[28px] bg-[#3C7CFC] flex justify-center items-center rounded-[5px] text-white">
-                                Connect</div>
+                                Connect
+                            </div>
                             <div class="border-l-2 h-[35px] mr-[-35px]"></div>
                         </div>
 
                         <div class="flex justify-between w-[70%] ">
-                            <div class="flex">
-                                <!-- <img class="mr-[8px] w-[30px] h-[18px] text-center" :src="logo_facebook" /> -->
+                            <div class="flex justify-center items-center">
+                                <!-- <img class="mr-[8px] w-[22px] h-[22px] text-center" :src="logo_google" /> -->
                                 <div>Facebook</div>
                             </div>
-                            <div
-                                class="w-[70px] h-[28px] bg-[#3C7CFC] flex justify-center items-center rounded-[5px] text-white">
-                                Connect</div>
+                            <div v-if="dataProfile.facebook" class="flex">
+                                 <div ><md-icon style=" color:green;">done</md-icon></div>
+                                <div>
+                                    <div class="w-[70px] h-[28px] flex justify-center items-center font-bold rounded-[5px] text-[14px]">Connect
+                                    </div>
+                                    <!-- <div
+                                        class="w-[70px] h-[28px] text-[12px] flex justify-center items-center rounded-[5px]">
+                                        (disconnect)</div> -->
+                                </div>
+
+                            </div>
+                            <button v-else
+                                class="w-[70px] h-[28px] bg-[#3C7CFC] flex justify-center items-center font-bold rounded-[5px] text-[14px] text-white">
+                                Connect
+                            </button>
                             <div class="border-l-2 h-[35px] mr-[-35px]"></div>
                         </div>
-                        <div class="flex justify-between w-[70%] ">
+                        <!-- <div class="flex justify-between w-[70%] ">
                             <div class="flex">
-                                <!-- <img class="mr-[8px] w-[22px] h-[22px] text-center" :src="logo_google" /> -->
                                 <div>Line</div>
                             </div>
                             <div
                                 class="w-[70px] h-[28px] bg-[#3C7CFC] flex justify-center items-center rounded-[5px] text-white">
                                 Connect</div>
-
-                        </div>
+                        </div> -->
                         <div></div>
                         <div></div>
                         <div></div>
@@ -216,12 +238,14 @@ export default {
                 role: '',
                 role_name: '',
                 team: '',
-                address: ''
+                address: '',
+                line: '',
+                google: ''
             },
             imgTest: '',
             preview: null,
             imgInput: null,
-            loading : false
+            loading: false
         }
 
     },
@@ -265,7 +289,7 @@ export default {
         },
         getSignalLits() {
             this.filePng = []
-            fetch('http://27.254.144.88:1337/api' + '/signatures?filters[id_user][$eq]='+ this.$store.state.userInfo.id)
+            fetch('http://27.254.144.88:1337/api' + '/signatures?filters[id_user][$eq]=' + this.$store.state.userInfo.id)
                 .then(response => response.json())
                 .then((resp) => {
                     console.log(resp);
@@ -317,6 +341,8 @@ export default {
                     this.dataProfile.phone = resp.phone
                     this.dataProfile.team = resp.team?.id
                     this.dataProfile.address = resp.address
+                    this.dataProfile.line = resp.lineToken
+                    this.dataProfile.google = resp.googleToken
                     this.preview = resp.filePath
                     console.log(this.dataProfile.team);
                 })
@@ -334,9 +360,9 @@ export default {
                 }).then((resp) => {
                     axios.put('http://27.254.144.88:1337/api' + '/users/' + this.$store.state.userInfo.id, {
                         "filePath": 'http://27.254.144.88:1337' + resp.data[0].url,
-                        
+
                     })
-                    this.$store.state.userInfo.filePath  = 'http://27.254.144.88:1337' + resp.data[0].url
+                    this.$store.state.userInfo.filePath = 'http://27.254.144.88:1337' + resp.data[0].url
                 }).finally(() => {
                     axios.put('http://27.254.144.88:1337/api' + '/users/' + this.$store.state.userInfo.id, {
                         "email": this.dataProfile.email,
@@ -348,7 +374,7 @@ export default {
                         "organization": this.dataProfile.organization,
                         "team": this.dataProfile.team
                     })
-                   
+
                     setTimeout(() => {
                         this.loading = false
                     }, 500)

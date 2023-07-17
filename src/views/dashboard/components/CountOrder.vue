@@ -4,12 +4,12 @@
             <div class="w-[auto] bg-[#F3F6F9] rounded-[50px]">
                 <button class="w-[auto] h-[30px] rounded-[50px]"
                     :style="{ background: checkTypeOrder == false ? '#3C7CFC' : '#F3F6F9', color: checkTypeOrder == false ? '#ffffff' : '#2D3349' }"
-                    @click="checkTypeOrder = !checkTypeOrder">
+                    @click="getNumber('Completed'), checkTypeOrder = !checkTypeOrder">
                     <span class="m-[10px]">Order Funnel</span>
                 </button>
                 <button class="w-[auto] h-[30px] rounded-[50px] "
                     :style="{ background: checkTypeOrder == true ? '#3C7CFC' : '#F3F6F9', color: checkTypeOrder == true ? '#ffffff' : '#2D3349' }"
-                    @click="checkTypeOrder = !checkTypeOrder">
+                    @click="getNumber('Pending Payment'), checkTypeOrder = !checkTypeOrder">
                     <span class="m-[10px]">Pending Order</span>
                 </button>
             </div>
@@ -21,9 +21,9 @@
                         <vs-th>
                             Name
                         </vs-th>
-                        <vs-th>
+                        <!-- <vs-th>
                             Plan
-                        </vs-th>
+                        </vs-th> -->
                         <vs-th>
                             Paid Date
                         </vs-th>
@@ -36,36 +36,37 @@
                     </vs-tr>
                 </template>
                 <template #tbody>
-                    <vs-tr :key="i" v-for="(tr, i) in $vs.getPage(dataFunnel, page, max)">
+                    <vs-tr :key="i" v-for="(tr, i) in $vs.getPage(data, page, max)">
                         <vs-td>
-                            {{ tr.name }}
+                            {{ tr.attributes.user_order.data.attributes.firstName }} {{
+                                tr.attributes.user_order.data.attributes.lastName }}
                         </vs-td>
-                        <vs-td>
+                        <!-- <vs-td>
                             <div class="flex">
                                 <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
                                     :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }">
                                     {{ tr.plan }}</div>
                             </div>
+                        </vs-td> -->
+                        <vs-td>
+                            {{ covertDate(tr.attributes.updatedAt) }}
                         </vs-td>
                         <vs-td>
-                            {{ tr.paid }} {{ tr.paidtime }}
-                        </vs-td>
-                        <vs-td>
-                            {{ tr.order_funnel }}
+                            Ksher Payment
                         </vs-td>
                         <vs-td>
                             <div class="flex">
                                 <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
-                                    :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }">
-                                    {{ tr.status }}</div>
+                                    :style="{ background: tr.attributes.status == 'Completed' ? '#2CD67A' : '#32C4F2' }">
+                                    {{ tr.attributes.status == 'Completed' ? 'Piad' : 'Pending' }} </div>
                             </div>
                         </vs-td>
                     </vs-tr>
                 </template>
 
             </vs-table>
-            <div class="center con-pagination mt-[-5px] " v-if="dataFunnel.length != 0">
-                <vs-pagination buttons-dotted v-model="page" :length="3" />
+            <div class="center con-pagination mt-[-5px]" v-if="length > 1">
+                <vs-pagination  buttons-dotted v-model="page" :length="length" />
             </div>
         </div>
         <div class="pl-[20px] pr-[20px] mt-[-10px]" v-else>
@@ -75,9 +76,9 @@
                         <vs-th>
                             Name
                         </vs-th>
-                        <vs-th>
+                        <!-- <vs-th>
                             Plan
-                        </vs-th>
+                        </vs-th> -->
                         <vs-th>
                             Paid Date
                         </vs-th>
@@ -90,36 +91,37 @@
                     </vs-tr>
                 </template>
                 <template #tbody>
-                    <vs-tr :key="i" v-for="(tr, i) in $vs.getPage(dataPending, page, max)">
+                    <vs-tr :key="i" v-for="(tr, i) in $vs.getPage(data, page, max)">
                         <vs-td>
-                            {{ tr.name }}
+                            {{ tr.attributes.user_order.data.attributes.firstName }} {{
+                                tr.attributes.user_order.data.attributes.lastName }}
                         </vs-td>
-                        <vs-td>
+                        <!-- <vs-td>
                             <div class="flex">
                                 <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
                                     :style="{ background: tr.plan == 'Gold' ? '#FFB927' : tr.plan == 'Silver' ? '#BCC7D6' : tr.plan == 'Platinum' ? '#64859F' : '' }">
                                     {{ tr.plan }}</div>
                             </div>
+                        </vs-td> -->
+                        <vs-td>
+                            {{ covertDate(tr.attributes.updatedAt) }}
                         </vs-td>
                         <vs-td>
-                            {{ tr.paid }} {{ tr.paidtime }}
-                        </vs-td>
-                        <vs-td>
-                            {{ tr.order_funnel }}
+                            Ksher Payment
                         </vs-td>
                         <vs-td>
                             <div class="flex">
                                 <div class="w-[auto] text-white text-center rounded-[20px] pl-[8px]  pr-[8px]  pt-[2px] pb-[2px]"
-                                    :style="{ background: tr.status == 'Paid' ? '#2CD67A' : '#32C4F2' }">
-                                    {{ tr.status }}</div>
+                                    :style="{ background: tr.attributes.status == 'Completed' ? '#2CD67A' : '#32C4F2' }">
+                                    {{ tr.attributes.status == 'Completed' ? 'Piad' : 'Pending' }} </div>
                             </div>
                         </vs-td>
                     </vs-tr>
                 </template>
 
             </vs-table>
-            <div class="center con-pagination mt-[-5px]" v-if="dataPending.length != 0">
-                <vs-pagination buttons-dotted v-model="page" :length="3" />
+            <div class="center con-pagination mt-[-5px]" v-if="length > 1">
+                <vs-pagination  buttons-dotted v-model="page" :length="length" />
             </div>
         </div>
     </div>
@@ -132,6 +134,8 @@ export default {
             checkTypeOrder: false,
             page: 1,
             max: 3,
+            length:0,
+            data: [],
             dataFunnel: [
                 {
                     id: 1,
@@ -300,10 +304,24 @@ export default {
             ]
         }
     },
+    mounted(){
+        this.getNumber('Completed')
+    },
     methods: {
-        test() {
-            !this.a
-            console.log(this.a);
+        getNumber(status) {
+            this.data = []
+            // api ยังไม่ส่งรูปมา
+            fetch('http://27.254.144.88:1337/api/orders?filters[status][$containsi]=' + status + '&populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    console.log(resp.data);
+                    this.data = resp.data
+                    this.length = resp.data.length/3
+                })
+        },
+        covertDate(val) {
+            const dateCovert = (new Date(val).toISOString().split("T")[0]).split('-');
+            return (dateCovert[2].toString()) + '/' + (dateCovert[1].toString()) + '/' + (dateCovert[0].toString())
         },
 
     }

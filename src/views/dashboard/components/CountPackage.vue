@@ -9,16 +9,20 @@
         <div class="flex  pl-[15px] pr-[15px] h-[100%] items-center">
             <div class="w-[49px]  text-right">
                 <div class="flex items-center">
-                    <div class="w-[4px] h-[10px] bg-[#79ACF9]  rounded-[100px]"></div><span class="text-[10px] ml-[4px]">Free trial</span>
+                    <div class="w-[4px] h-[10px] bg-[#79ACF9]  rounded-[100px]"></div><span
+                        class="text-[10px] ml-[4px]">Free</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-[4px] h-[10px] bg-[#BCC7D6]  rounded-[100px]"></div><span class="text-[10px] ml-[4px]">Silver</span>
+                    <div class="w-[4px] h-[10px] bg-[#BCC7D6]  rounded-[100px]"></div><span
+                        class="text-[10px] ml-[4px]">Silver</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-[4px] h-[10px] bg-[#FFB927]  rounded-[100px]"></div><span class="text-[10px] ml-[4px]">Gold</span>
+                    <div class="w-[4px] h-[10px] bg-[#FFB927]  rounded-[100px]"></div><span
+                        class="text-[10px] ml-[4px]">Gold</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="w-[4px] h-[10px] bg-[#FFB927]  rounded-[100px]"></div><span class="text-[10px] ml-[4px]">Platinum</span>
+                    <div class="w-[4px] h-[10px] bg-[#64859F]  rounded-[100px]"></div><span
+                        class="text-[10px] ml-[4px]">Platinum</span>
                 </div>
             </div>
             <div class="w-[14vw] flex justify-center items-center  ml-[10px] h-[9vw]">
@@ -29,22 +33,30 @@
             <div class="flex w-[180px] justify-between items-center  ">
                 <div>
                     <div class="mb-[10px]">
-                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">10</div>
-                        <div class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#79ACF9]">FreeTrial</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">0</div>
+                        <div
+                            class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#79ACF9]">
+                            Free</div>
                     </div>
                     <div>
-                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">15</div>
-                        <div class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#FFB927]">Gold</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px] ">{{ gold }}</div>
+                        <div
+                            class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#FFB927]">
+                            Gold</div>
                     </div>
                 </div>
-                <div >
+                <div>
                     <div class="mb-[10px]">
-                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px]">10</div>
-                        <div class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#BCC7D6]">Silver</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold mb-[4px]">{{ silver }}</div>
+                        <div
+                            class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#BCC7D6]">
+                            Silver</div>
                     </div>
                     <div>
-                        <div class="text-[#2D3349] text-[20px] font-bold  mb-[4px]">5</div>
-                        <div class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#64859F]">Platinum</div>
+                        <div class="text-[#2D3349] text-[20px] font-bold  mb-[4px]">{{ platinum }}</div>
+                        <div
+                            class="w-[auto] p-[10px] text-center h-[17px] text-[11px] text-white flex justify-center items-center rounded-[100px] bg-[#64859F]">
+                            Platinum</div>
                     </div>
                 </div>
             </div>
@@ -58,12 +70,21 @@ import VueApexCharts from "vue-apexcharts";
 export default {
     components: {
         apexchart: VueApexCharts,
-       
+
     },
     data() {
         return {
-            data: [10, 10, 15, 5],
+            data: [0,0,0,0],
+            gold: 0,
+            silver: 0,
+            platinum: 0
         };
+    },
+    mounted() {
+        this.getNumber()
+        setTimeout(() => {
+            this.data = [0,parseInt(this.silver),parseInt(this.gold),parseInt(this.platinum)]
+        }, 500)
     },
     computed: {
         options() {
@@ -77,7 +98,7 @@ export default {
                 legend: {
                     show: false,
                 },
-                labels: ["Free trial", "Silver","Gold","Platinum"],
+                labels: ["Free trial", "Silver", "Gold", "Platinum"],
                 plotOptions: {
                     pie: {
                         donut: {
@@ -94,13 +115,33 @@ export default {
                         },
                     },
                 },
-                colors: ["#79ACF9","#BCC7D6","#FFB927","#64859F"]
+                colors: ["#79ACF9", "#BCC7D6", "#FFB927", "#64859F"]
                 // noData: {
                 //     text: this.loading ? "Loading..." : "No Data",
                 // },
             };
         },
     },
+    methods: {
+        getNumber() {
+            // api ยังไม่ส่งรูปมา
+            fetch('http://27.254.144.88:1337/api/users?filters[package][packageName][$eq]=PLATINUM&populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    this.platinum = resp.length;
+                })
+            fetch('http://27.254.144.88:1337/api/users?filters[package][packageName][$eq]=SILVER&populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    this.silver = resp.length;
+                })
+            fetch('http://27.254.144.88:1337/api/users?filters[package][packageName][$eq]=GOLD&populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    this.gold = resp.length;
+                })
+        },
+    }
 }
 
 </script>

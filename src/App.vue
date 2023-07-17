@@ -1,12 +1,28 @@
 <template>
   <div>
     <div v-if="$store.state.is_login" id="app">
-      <div :style="{ 'margin-left': sidebarWidth }">
-        <Toolbar />
+      <div v-if="$store.state.userDetail.role.name == 'Admin'">
+        <div :style="{ 'margin-left': sidebarWidth }">
+          <Toolbar />
+        </div>
+        <Sidebar />
+        <div class=" border-[#E9EEF6]" :style="{ 'margin-left': sidebarWidth }">
+          <router-view />
+        </div>
       </div>
-      <Sidebar />
-      <div class=" border-[#E9EEF6]" :style="{ 'margin-left': sidebarWidth }">
-        <router-view />
+      <div v-else>
+        <div v-if="$store.state.userDetail.expStatus == true">
+          <div :style="{ 'margin-left': sidebarWidth }">
+            <Toolbar />
+          </div>
+          <Sidebar />
+          <div class=" border-[#E9EEF6]" :style="{ 'margin-left': sidebarWidth }">
+            <router-view />
+          </div>
+        </div>
+        <div v-else>
+          <Plan />
+        </div>
       </div>
     </div>
     <div v-if="!$store.state.is_login">
@@ -20,8 +36,9 @@ import Sidebar from './components/Sidebar.vue';
 import Toolbar from './components/Toolbar.vue';
 import { sidebarWidth, toolbarHeight } from '@/components/state'
 import Login from '@/views/login-register/Login.vue'
+import Plan from './views/setting/plans/Plan.vue';
 export default {
-  components: { Sidebar, Toolbar , Login},
+  components: { Sidebar, Toolbar, Login, Plan },
   setup() {
     return { sidebarWidth, toolbarHeight, }
   },
@@ -29,6 +46,11 @@ export default {
 
   },
   created() {
+    console.log(this.$store.state.userDetail);
+    if (this.$store.state.userDetail.org_role.id) {
+      this.$store.dispatch('rolePerrmission', this.$store.state.userDetail.org_role.id)
+    }
+
     // if(this.$store.state.token == ''){
     //   window.location.replace("/")
 

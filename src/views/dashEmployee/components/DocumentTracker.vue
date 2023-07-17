@@ -48,14 +48,15 @@
                         </vs-td>
                         <vs-td>
                             <div class=" flex w-[150px]">
-                                <div class="text-[white] h-[25px]  flex justify-center items-center rounded-[100px] p-[14px]"
+                                <div class="text-[white] h-[25px] w-[auto] flex justify-center items-center rounded-[100px] p-[14px]"
                                     :style="{
                                         background: tr.attributes.status == 1 ?
-                                            '#BCC7D6' : tr.attributes.status === 2 ? '#79ACF9' : tr.attributes.status === 4 ? '#369C7B' : tr.attributes.status === 5 ? 'red' : '#6B7490'
+                                            '#BCC7D6' : tr.attributes.status === 2 ? '#79ACF9' : tr.attributes.status == 3 ? '#FFB927' : tr.attributes.status === 4 ? '#369C7B' : tr.attributes.status === 5 ? 'red' : '#6B7490'
                                     }">
                                     {{ tr.attributes.status == 1 ?
-                                        'Draft' : tr.attributes.status === 2 ? 'Pending [Serial] 2/3' : tr.attributes.status ===
-                                            4 ? 'Approved' : tr.attributes.status === 5 ? 'Reject' : 'Revise' }}
+                                        'Draft' : tr.attributes.status === 2 ? tr.attributes.sequentialOrder ? 'Pending [Serial]':'Pending [Paralell]' :
+                                    tr.attributes.status ===
+                                        4 ? 'Approved' : tr.attributes.status === 5 ? 'Reject' : 'Revise' }}
                                 </div>
                             </div>
                         </vs-td>
@@ -101,16 +102,25 @@ export default {
             fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[favoriteDoc][$eq]=true&pagination[page]=' + this.page + '&pagination[pageSize]=3')
                 .then(response => response.json())
                 .then((resp) => {
+                    resp.data.forEach((data) => {
+                        console.log(data.attributes.relatedUser);
+                        data.attributes.relatedUser.data.forEach((data2) => {
+                            if (this.$store.state.userInfo.id == data2.id) {
+                                this.items.push(data)
+                            }
+                        })
+                        console.log(data)
+                    })
                     this.lengthPage = resp.meta.pagination.pageCount
-                    const arr = []
-                    arr.push(resp.data)
-                    this.items = arr[0]
+                    // const arr = []
+                    // arr.push(resp.data)
+                    // this.items = arr[0]
                 })
         },
         routTo() {
             router.push({
                 path: '/document',
-                query: { favorte: true,name:'Favorite Documents' },
+                query: { favorte: true, name: 'Favorite Documents' },
             })
 
         }

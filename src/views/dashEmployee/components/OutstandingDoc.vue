@@ -94,14 +94,15 @@
                         </vs-td>
                         <vs-td>
                             <div class=" flex w-[150px]">
-                                <div class="text-[white] h-[25px]  flex justify-center items-center rounded-[100px] p-[14px]"
+                                <div class="text-[white] h-[25px] w-[auto] flex justify-center items-center rounded-[100px] p-[14px]"
                                     :style="{
                                         background: tr.attributes.status == 1 ?
-                                            '#BCC7D6' : tr.attributes.status === 2 ? '#79ACF9' : tr.attributes.status === 3 ? '#FFB927' : tr.attributes.status === 4 ? 'red' : '#6B7490'
+                                            '#BCC7D6' : tr.attributes.status === 2 ? '#79ACF9' : tr.attributes.status == 3 ? '#FFB927' : tr.attributes.status === 4 ? '#369C7B' : tr.attributes.status === 5 ? 'red' : '#6B7490'
                                     }">
                                     {{ tr.attributes.status == 1 ?
-                                        'Draft' : tr.attributes.status === 2 ? 'Pending [Serial] 2/3' : tr.attributes.status ===
-                                            4 ? 'Approved' : tr.attributes.status === 5 ? 'Reject' : 'Revise' }}
+                                        'Draft' : tr.attributes.status === 2 ? tr.attributes.sequentialOrder ? 'Pending [Serial]':'Pending [Paralell]' :
+                                    tr.attributes.status ===
+                                        4 ? 'Approved' : tr.attributes.status === 5 ? 'Reject' : 'Revise' }}
                                 </div>
                             </div>
                         </vs-td>
@@ -147,35 +148,53 @@ export default {
             this.items = []
             if (this.changeTab == 2) {
                 console.log('3');
-                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[sequentialOrder][$eq]=true&filters[status][$eq]=2&pagination[page]=' + this.page + '&pagination[pageSize]=10')
+                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[sequentialOrder][$eq]=true&filters[status][$eq]=2&pagination[page]=' + this.page + '&pagination[pageSize]=10&filters[relatedUser][id][$eq]='+this.$store.state.userInfo.id)
                     .then(response => response.json())
                     .then((resp) => {
                         this.lengthPage = resp.meta.pagination.pageCount
-                        const arr = []
-                        arr.push(resp.data)
-                        this.items = arr[0]
+                        resp.data.forEach((data) => {
+                            console.log(data.attributes.relatedUser);
+                            data.attributes.relatedUser.data.forEach((data2) => {
+                                if (this.$store.state.userInfo.id == data2.id) {
+                                    this.items.push(data)
+                                }
+                            })
+                            console.log(data)
+                        })
                     })
             }
             else if (this.changeTab == 22) {
                 console.log('33');
-                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[sequentialOrder][$eq]=false&filters[status][$eq]=2&pagination[page]=' + this.page + '&pagination[pageSize]=10')
+                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[sequentialOrder][$eq]=false&filters[status][$eq]=2&pagination[page]=' + this.page + '&pagination[pageSize]=10&filters[relatedUser][id][$eq]='+this.$store.state.userInfo.id)
                     .then(response => response.json())
                     .then((resp) => {
                         this.lengthPage = resp.meta.pagination.pageCount
-                        const arr = []
-                        arr.push(resp.data)
-                        this.items = arr[0]
+                        resp.data.forEach((data) => {
+                            console.log(data.attributes.relatedUser);
+                            data.attributes.relatedUser.data.forEach((data2) => {
+                                if (this.$store.state.userInfo.id == data2.id) {
+                                    this.items.push(data)
+                                }
+                            })
+                            console.log(data)
+                        })
                     })
             }
             else if (this.changeTab == 3) {
                 console.log('0');
-                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[status][$eq]=' + this.changeTab + '&pagination[page]=' + this.page + '&pagination[pageSize]=3')
+                fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[status][$eq]=' + this.changeTab + '&pagination[page]=' + this.page + '&pagination[pageSize]=3&filters[relatedUser][id][$eq]='+this.$store.state.userInfo.id)
                     .then(response => response.json())
                     .then((resp) => {
                         this.lengthPage = resp.meta.pagination.pageCount
-                        const arr = []
-                        arr.push(resp.data)
-                        this.items = arr[0]
+                        resp.data.forEach((data) => {
+                            console.log(data.attributes.relatedUser);
+                            data.attributes.relatedUser.data.forEach((data2) => {
+                                if (this.$store.state.userInfo.id == data2.id) {
+                                    this.items.push(data)
+                                }
+                            })
+                            console.log(data)
+                        })
                     })
             }
 
@@ -184,21 +203,21 @@ export default {
             if (this.changeTab == 2) {
                 router.push({
                     path: '/document',
-                    query: { approve: 2, seq: true,name:'Pending [Serial] Document' },
+                    query: { approve: 2, seq: true, name: 'Pending [Serial] Document' },
                 })
 
             }
             else if (this.changeTab == 22) {
                 router.push({
                     path: '/document',
-                    query: { approve: 2, seq: false,name:'Pending [Parallel] Document' },
+                    query: { approve: 2, seq: false, name: 'Pending [Parallel] Document' },
                 })
 
             }
             else if (this.changeTab == 3) {
                 router.push({
                     path: '/document',
-                    query: { approve: 3,name:'Revise Document' },
+                    query: { approve: 3, name: 'Revise Document' },
                 })
 
             }

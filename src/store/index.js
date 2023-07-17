@@ -11,10 +11,11 @@ export default new Vuex.Store({
     is_login: false,
     drawer: false,
     token: '',
-    errLogin:false,
-    userInfo: {},
+    errLogin: false,
+    userInfo: null,
     userDetail: {},
-    role: {}
+    role: {},
+    role_perrmission: {}
   },
   getters: {
 
@@ -33,6 +34,9 @@ export default new Vuex.Store({
     },
     setUserDetail(state, data) {
       state.userDetail = data
+    },
+    setRolePermisss(state, data) {
+      state.role_perrmission = data
     },
     setRole(state, data) {
       state.role = data
@@ -58,14 +62,19 @@ export default new Vuex.Store({
         fetch('http://27.254.144.88:1337/api/users/' + resp.data.user.id + '?populate=*')
           .then(response => response.json())
           .then((resp2) => {
-            fetch('http://27.254.144.88:1337/api/org-roles/'+resp2.org_role.id+'?populate=*')
-              .then(response => response.json())
-              .then((resp3) => {
-                setTimeout(() => {
-                  commit('setRole', resp3.data.attributes.org_permission.data.attributes)
-                }, 500)
-              })
+            // console.log('userDEtail',resp2);
+            if (resp2.org_role) {
+              fetch('http://27.254.144.88:1337/api/org-roles/' + resp2.org_role.id + '?populate=*')
+                .then(response => response.json())
+                .then((resp3) => {
+                  console.log(resp3);
+                  setTimeout(() => {
+                    commit('setRolePermisss', resp3.data.attributes.org_permission.data.attributes)
+                  }, 500)
+                })
+            }
             setTimeout(() => {
+              commit('setRole', resp2.role)
               commit('setUserDetail', resp2)
             }, 500)
           })
@@ -78,20 +87,20 @@ export default new Vuex.Store({
             path: '/',
           })
         }, 500)
-      }).catch((err)=>{
-        commit('setErr', err? true:false)
+      }).catch((err) => {
+        commit('setErr', err ? true : false)
       }).finally(() => {
       })
     },
-    rolePerrmission({commit},idRole){
-      fetch('http://27.254.144.88:1337/api/org-roles/'+idRole+'?populate=*')
-      .then(response => response.json())
-      .then((resp3) => {
-        console.log(resp3);
-        setTimeout(() => {
-          commit('setRole', resp3.data.attributes.org_permission.data.attributes)
-        }, 500)
-      })
+    rolePerrmission({ commit }, idRole) {
+      fetch('http://27.254.144.88:1337/api/org-roles/' + idRole + '?populate=*')
+        .then(response => response.json())
+        .then((resp3) => {
+          console.log(resp3);
+          setTimeout(() => {
+            commit('setRolePermisss', resp3.data.attributes.org_permission.data.attributes)
+          }, 500)
+        })
     }
   },
   modules: {

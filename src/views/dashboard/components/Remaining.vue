@@ -5,13 +5,11 @@
                 <div class="text-[14px] font-bold ">Remaining System Capacity</div>
                 <div class="mt-[10px]">
                     <div>
-                            <select class=" select-opt w-[100%] h-[30px] rounded-[6px]">
-                                <option disabled value="">Select...</option>
-                                <option>Chatchapon Boonpan</option>
-                                <option>Beerina Kawel</option>
-                                <option>Cicogo Yiweyi</option>
-                            </select>
-                        </div>
+                        <select class=" select-opt w-[100%] h-[30px] rounded-[6px]"  v-model="userId" @change="getRemaining(userId)">
+                            <option disabled value="">Select...</option>
+                            <option v-for="user in users" :value="user.id">{{ user.firstName }} {{ user.lastName }}</option>
+                        </select>
+                    </div>
                     <!-- <vs-select v-model="value">
                         <vs-option label="January" value=1>
                             <div class="flex justify-center items-center">
@@ -59,24 +57,24 @@
                 <div class="mt-[20px]">
                     <div class="flex justify-between mb-[-10px] ">
                         <div class="text-[12px] text-[#6B7490] flex justify-center items-center font-bold">Plan</div>
-                        <div class="text-[24px] text-[#FFB927] font-bold">Gold</div>
+                        <div class="text-[24px] text-[#FFB927] font-bold">{{ plan }}</div>
                     </div>
                     <hr>
                     <div class="flex justify-between mb-[-10px] mt-[-10px]">
                         <div class="text-[12px] text-[#6B7490] flex justify-center items-center font-bold">Used</div>
-                        <div class="text-[24px] text-[#6B7490] font-bold">400 GB</div>
+                        <div class="text-[24px] text-[#6B7490] font-bold">{{ used }} GB</div>
                     </div>
                     <hr>
                     <div class="flex justify-between  mb-[-10px] mt-[-10px] ">
                         <div class="text-[12px] text-[#6B7490] flex justify-center items-center font-bold">Available</div>
-                        <div class="text-[28px] text-[#4FBD9E] font-bold">600 GB</div>
+                        <div class="text-[28px] text-[#4FBD9E] font-bold">{{ available }} GB</div>
                     </div>
                 </div>
             </div>
             <div class="w-[300px] h-[200px]">
                 <apexchart :options="options" :series="data"></apexchart>
             </div>
-            
+
         </div>
     </div>
 </template>
@@ -88,11 +86,20 @@ export default {
     },
     data() {
         return {
-            data: [400, 600],
+            data: [0, 0],
             value: '',
+            userId:'',
+            users:[],
+            used:0,
+            available:0,
+            plan:''
         }
     },
+    mounted() {
+        this.getProfile()
+    },
     computed: {
+
         options() {
             return {
                 chart: {
@@ -102,9 +109,9 @@ export default {
                     enabled: false,
                 },
                 legend: {
-                  show: false,
+                    show: false,
                 },
-                labels:["Used","Available"],
+                labels: ["Used", "Available"],
                 plotOptions: {
                     pie: {
                         donut: {
@@ -131,6 +138,27 @@ export default {
             };
         },
     },
+    methods: {
+        getProfile() {
+            // api ยังไม่ส่งรูปมา
+            fetch('http://27.254.144.88:1337/api' + '/users/'+'?filters[role][name][$eq]=Owner&populate=*')
+                .then(response => response.json())
+                .then((resp) => {
+                    this.users = resp
+                })
+        },
+        getRemaining(id){
+            fetch('http://27.254.144.88:1337/api/filesize?id='+id)
+                .then(response => response.json())
+                .then((resp) => {
+                    this.plan = resp.packageName
+                    this.used  = resp.ownFile
+                    this.available = resp.packageLimit - parseFloat(resp.ownFile)
+                    this.data= [parseFloat(resp.ownFile),resp.packageLimit-parseFloat(resp.ownFile)]
+                    console.log( this.data);
+                })
+        }
+    }
 }
 </script>
 

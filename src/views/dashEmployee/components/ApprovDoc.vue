@@ -71,10 +71,19 @@ export default {
             fetch('http://27.254.144.88:1337/api' + '/documents?populate=*&filters[status][$eq]=4&pagination[page]=' + this.page + '&pagination[pageSize]=3')
                 .then(response => response.json())
                 .then((resp) => {
+                    resp.data.forEach((data) => {
+                            console.log(data.attributes.relatedUser);
+                            data.attributes.relatedUser.data.forEach((data2)=>{
+                               if(this.$store.state.userInfo.id == data2.id) {
+                                this.items.push(data)
+                               }
+                            })  
+                            console.log(data)
+                        })
                     this.lengthPage = resp.meta.pagination.pageCount
-                    const arr = []
-                    arr.push(resp.data)
-                    this.items = arr[0]
+                    // const arr = []
+                    // arr.push(resp.data)
+                    // this.items = arr[0]
                 })
         },
         routTo() {

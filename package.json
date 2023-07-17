@@ -6,7 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
+  "browser": {
+    "crypto": false,
+    "stream": false
+  },
   "dependencies": {
+    "@pdftron/webviewer": "^10.2.3",
     "apexcharts": "^3.37.3",
     "autoprefixer": "^10",
     "axios": "^1.4.0",
@@ -14,7 +19,9 @@
     "bootstrap-vue": "^2.23.1",
     "chart.js": "^4.2.1",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.1.1",
     "firebase": "^10.0.0",
+    "js-sha256": "^0.9.0",
     "piechart": "^1.0.0",
     "postcss": "^8",
     "tailwindcss": "^3",

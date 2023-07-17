@@ -9,7 +9,7 @@
                 <template #tooltip>
                     <div class="m-[15px]">
                         <div class="flex cursor-pointer hover:bg-sky-100 rounded-[5px]"
-                            @click="$store.state.role.folderCreate ? createFolderPopup = !createFolderPopup : null">
+                            @click="$store.state.role_perrmission.folderCreate ? createFolderPopup = !createFolderPopup : null">
                             <div><md-icon>create_new_folder</md-icon></div>
                             <div class="flex justify-center items-center ml-[8px] ">Create Folder</div>
                         </div>
