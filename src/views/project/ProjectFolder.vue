@@ -173,7 +173,7 @@ export default {
         getFileList(id) {
             this.fileDetail = null
             this.tabFile = null
-            fetch('http://27.254.144.88:1337/api' + '/document-files?populate=*&filters[document][id][$eq]=' + id)
+            fetch('http:/ /27.254.144.88:1337/api' + '/document-files?populate=*&filters[document][id][$eq]=' + id)
                 .then(response => response.json())
                 .then((resp) => {
                     this.lengthPage = resp.meta.pagination.pageCount
